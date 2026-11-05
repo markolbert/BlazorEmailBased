@@ -1,0 +1,57 @@
+﻿@typeparam TItem
+
+@if (Items.Count > ItemsPerPage)
+{
+    <div class="pagination">
+        <div>
+            @if (PageNum > 0)
+            {
+                <span class="paging" @onclick="async () => await ChangePageAsync(-PageNum)">|&lt;&nbsp;</span>
+                <span class="paging" @onclick="async () => await ChangePageAsync(-1)">&lt;</span>
+            }
+            else
+            {
+                <span class="non-paging">|&lt;&nbsp;</span>
+                <span class="non-paging">&lt;</span>
+            }
+        </div>
+
+        <div>
+            @if (PageNum < (Items.Count - 1) / ItemsPerPage)
+            {
+                <span class="paging" @onclick="async () => await ChangePageAsync(1)">&gt;&nbsp;</span>
+                <span class="paging" @onclick="async () => await ChangePageAsync((Items.Count - 1) / ItemsPerPage)">&gt;|</span>
+            }
+            else
+            {
+                <span class="non-paging">&gt;&nbsp;</span>
+                <span class="non-paging">&gt;|</span>
+            }
+        </div>
+    </div>
+}
+
+
+@code {
+
+    [ Parameter ]
+    public List<TItem> Items { get; set; } = [];
+
+    [Parameter]
+    public int ItemsPerPage { get; set; }
+
+    [Parameter]
+    public int PageNum { get; set; }
+
+    [Parameter]
+    public EventCallback<int> PageNumChanged { get; set; }
+
+    private async Task ChangePageAsync(int delta)
+    {
+        PageNum += delta;
+
+        await PageNumChanged.InvokeAsync( PageNum );
+
+        StateHasChanged();
+    }
+}

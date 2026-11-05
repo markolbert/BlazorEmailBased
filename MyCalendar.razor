@@ -1,0 +1,216 @@
+﻿@using System.Text
+
+<div class="calendar-card">
+    <div class="calendar-header">
+        <button @onclick="PreviousMonthAsync">&lt;</button>
+        <h2>@CurrentMonthName @CurrentYear</h2>
+        <button @onclick="NextMonthAsync">&gt;</button>
+    </div>
+    
+    @if( DaysOfWeekClickable )
+    {
+        <div class="calendar-grid weekdays">
+            <div @onclick="@(() => ToggleDowExclusionAsync(DayOfWeek.Sunday))" style="cursor: pointer;">Sun</div>
+            <div @onclick="@(() => ToggleDowExclusionAsync(DayOfWeek.Monday))" style="cursor: pointer;">Mon</div>
+            <div @onclick="@(() => ToggleDowExclusionAsync(DayOfWeek.Tuesday))" style="cursor: pointer;">Tue</div>
+            <div @onclick="@(() => ToggleDowExclusionAsync(DayOfWeek.Wednesday))" style="cursor: pointer;">Wed</div>
+            <div @onclick="@(() => ToggleDowExclusionAsync(DayOfWeek.Thursday))" style="cursor: pointer;">Thu</div>
+            <div @onclick="@(() => ToggleDowExclusionAsync(DayOfWeek.Friday))" style="cursor: pointer;">Fri</div>
+            <div @onclick="@(() => ToggleDowExclusionAsync(DayOfWeek.Saturday))" style="cursor: pointer;">Sat</div>
+        </div>
+    }
+    else
+    {
+        <div class="calendar-grid weekdays">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+        </div>
+    }
+
+    <div class="calendar-grid days">
+        @foreach (var day in _calendarDays)
+        {
+            if( IsDayCellClickable( day ) )
+            {
+                <div class="@GetDayCellClass( day )" 
+                     style="@(string.IsNullOrEmpty(day.BackgroundColor) ? string.Empty : $"background-color: #{day.BackgroundColor};")" 
+                     @onclick="() => ToggleDateExclusionAsync( day )">
+                    @( day.Date.Day )
+                
+                    @foreach (var colorCode in day.BlockColors ?? Enumerable.Empty<string>())
+                    {
+                        <div style="background-color: @colorCode;">&nbsp;</div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="@GetDayCellClass(day)" 
+                     style="@(string.IsNullOrEmpty(day.BackgroundColor) ? string.Empty : $"background-color: #{day.BackgroundColor};")">
+                    @( day.Date.Day )
+
+                    @foreach (var colorCode in day.BlockColors ?? Enumerable.Empty<string>())
+                    {
+                        <div style="background-color: #@colorCode;">&nbsp;</div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@code {
+
+    [ Parameter ]
+    public bool DaysOfWeekClickable { get; set; }
+
+    [ Parameter ]
+    public EventCallback<CalendarArgs> UpdateCalendarInfo { get; set; }
+
+    [ Parameter ]
+    public EventCallback<DowClickedArgs> DayOfWeekClicked { get; set; }
+
+    [ Parameter ]
+    public EventCallback<DayClickedArgs> DayClicked { get; set; }
+
+    [Parameter]
+    public Guid RefreshToken { get; set; }
+
+    private readonly List<CalendarDay> _calendarDays = [];
+
+    private DateTime _firstOfMonth = DateTime.Today.AddDays( -DateTime.Today.Day + 1 );
+    private string CurrentMonthName => _firstOfMonth.ToString( "MMMM" );
+    private int CurrentYear => _firstOfMonth.Year;
+
+    public async Task Regenerate()
+    {
+        await GetCalendarDaysAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await GetCalendarDaysAsync();
+    }
+
+    private async Task GetCalendarDaysAsync()
+    {
+        _calendarDays.Clear();
+
+        var startDayOfWeek = (int) _firstOfMonth.DayOfWeek;
+        var totalDaysInMonth = DateTime.DaysInMonth( _firstOfMonth.Year, _firstOfMonth.Month );
+
+        // Padding days from previous month
+        for( var i = startDayOfWeek - 1; i >= 0; i-- )
+        {
+            _calendarDays.Add( CalendarDay.Create( DateOnly.FromDateTime( _firstOfMonth.AddDays( -i - 1 ) ), ref _firstOfMonth ) );
+        }
+
+        // Current month days
+        for( var i = 1; i <= totalDaysInMonth; i++ )
+        {
+            var date = new DateTime( _firstOfMonth.Year, _firstOfMonth.Month, i );
+            _calendarDays.Add( CalendarDay.Create( DateOnly.FromDateTime( date ), ref _firstOfMonth ) );
+        }
+
+        await UpdateCalendarInfo.InvokeAsync( new CalendarArgs( _firstOfMonth, _calendarDays ) );
+
+        StateHasChanged();
+    }
+
+    private async Task PreviousMonthAsync( MouseEventArgs args )
+    {
+        _firstOfMonth = _firstOfMonth.AddMonths( -1 );
+
+        await GetCalendarDaysAsync();
+    }
+
+    private async Task NextMonthAsync( MouseEventArgs args )
+    {
+        _firstOfMonth = _firstOfMonth.AddMonths( 1 );
+
+        await GetCalendarDaysAsync();
+    }
+
+    private async Task ToggleDateExclusionAsync( CalendarDay calDay )
+    {
+        await DayClicked.InvokeAsync( new DayClickedArgs( calDay.Date, new CalendarArgs( _firstOfMonth, _calendarDays ) ) );
+
+        await GetCalendarDaysAsync();
+    }
+
+    private async Task ToggleDowExclusionAsync( DayOfWeek dow )
+    {
+        await DayOfWeekClicked.InvokeAsync( new DowClickedArgs( dow, new CalendarArgs( _firstOfMonth, _calendarDays ) ) );
+
+        await GetCalendarDaysAsync();
+    }
+
+    private static string GetDayCellClass( CalendarDay calDay )
+    {
+        var sb = new StringBuilder();
+
+        if( calDay.State.HasFlag( DayState.Inactive ) )
+            sb.Append( "inactive " );
+
+        sb.Append( calDay.State.HasFlag( DayState.Clickable ) ? "calendar-day" : "calendar-day-unclickable" );
+
+        return sb.ToString();
+    }
+
+    private static bool IsDayCellClickable( CalendarDay calDay ) => calDay.State.HasFlag( DayState.Clickable );
+
+    [ Flags ]
+    public enum DayState
+    {
+        Clickable = 1 << 0,
+        Inactive = 1 << 1,
+
+        None = 0
+    }
+
+    public class CalendarDay
+    {
+        internal static CalendarDay Create( DateOnly date, ref DateTime firstOfMonth ) => new( date, ref firstOfMonth );
+
+        private readonly DateTime _firstOfMonth;
+
+        private CalendarDay(
+            DateOnly date,
+            ref DateTime firstOfMonth
+        )
+        {
+            _firstOfMonth = firstOfMonth;
+            Date = date;
+        }
+
+        public DateOnly Date { get; }
+        public bool InCurrentMonth => Date.Month == _firstOfMonth.Month && Date.Year == _firstOfMonth.Year;
+        public bool InThePast => Date < DateOnly.FromDateTime( DateTime.Today );
+
+        public DayState State { get; set; } = DayState.None;
+        public string? BackgroundColor { get; set; }
+        public List<string>? BlockColors { get; set; }
+    }
+
+    public record CalendarArgs( DateOnly FirstOfMonth, List<CalendarDay> CalendarDays )
+    {
+        public CalendarArgs(
+            DateTime firstOfMonth,
+            List<CalendarDay> calendarDays
+        )
+            : this( DateOnly.FromDateTime( firstOfMonth ), calendarDays )
+        {
+        }
+    }
+
+    public record DowClickedArgs( DayOfWeek DayOfWeek, CalendarArgs CalendarInfo );
+
+    public record DayClickedArgs( DateOnly Day, CalendarArgs CalendarInfo );
+
+}
