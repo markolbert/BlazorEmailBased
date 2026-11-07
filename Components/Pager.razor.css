@@ -1,0 +1,14 @@
+﻿div.pagination {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+span.paging {
+    color: #4CAF50;
+    cursor: pointer;
+}
+
+span.non-paging {
+    color: lightgray;
+}

@@ -4,12 +4,12 @@ using Microsoft.Extensions.Configuration;
 
 namespace BlazorEmailSiteCommon.Services;
 
-public sealed class AdministratorAuthorizationHandler<TMember>(
-    UserManager<TMember> userManager,
+public sealed class AdministratorAuthorizationHandler<TUser>(
+    UserManager<TUser> userManager,
     IConfiguration config
     )
     : AuthorizationHandler<AdministratorRequirement>
-where TMember : IdentityUser, IAdministrator
+where TUser : IdentityUser<int>, IAdministrator
 {
     protected override async Task HandleRequirementAsync(
         AuthorizationHandlerContext context,

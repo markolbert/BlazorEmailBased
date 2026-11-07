@@ -1,0 +1,16 @@
+Because the component and .razor.css are in a Razor class library, the consuming Blazor 
+Server app must load the library’s generated CSS bundle. You don’t link the individual .razor.css 
+file, and you don’t put the link in the library component.
+
+Add this to the consuming app’s <head>:
+
+html
+ Download
+Copy
+<link href="_content/BlazorEmailSiteCommon/BlazorEmailSiteCommon.bundle.scp.css"
+      rel="stylesheet" />
+
+For a .NET 8+ Blazor Web App, put it in the host app’s Components/App.razor; 
+for older Blazor Server apps, put it in Pages/_Host.cshtml. 
+The _content/BlazorEmailSiteCommon path uses the library’s static-web-asset base path, 
+which is usually its assembly or package name.

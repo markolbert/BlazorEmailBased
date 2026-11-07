@@ -2,9 +2,9 @@
 
 <div class="calendar-card">
     <div class="calendar-header">
-        <button @onclick="PreviousMonthAsync">&lt;</button>
+        <button class="btn-submit" @onclick="PreviousMonthAsync">&lt;</button>
         <h2>@CurrentMonthName @CurrentYear</h2>
-        <button @onclick="NextMonthAsync">&gt;</button>
+        <button class="btn-submit" @onclick="NextMonthAsync">&gt;</button>
     </div>
     
     @if( DaysOfWeekClickable )
@@ -164,53 +164,4 @@
     }
 
     private static bool IsDayCellClickable( CalendarDay calDay ) => calDay.State.HasFlag( DayState.Clickable );
-
-    [ Flags ]
-    public enum DayState
-    {
-        Clickable = 1 << 0,
-        Inactive = 1 << 1,
-
-        None = 0
-    }
-
-    public class CalendarDay
-    {
-        internal static CalendarDay Create( DateOnly date, ref DateTime firstOfMonth ) => new( date, ref firstOfMonth );
-
-        private readonly DateTime _firstOfMonth;
-
-        private CalendarDay(
-            DateOnly date,
-            ref DateTime firstOfMonth
-        )
-        {
-            _firstOfMonth = firstOfMonth;
-            Date = date;
-        }
-
-        public DateOnly Date { get; }
-        public bool InCurrentMonth => Date.Month == _firstOfMonth.Month && Date.Year == _firstOfMonth.Year;
-        public bool InThePast => Date < DateOnly.FromDateTime( DateTime.Today );
-
-        public DayState State { get; set; } = DayState.None;
-        public string? BackgroundColor { get; set; }
-        public List<string>? BlockColors { get; set; }
-    }
-
-    public record CalendarArgs( DateOnly FirstOfMonth, List<CalendarDay> CalendarDays )
-    {
-        public CalendarArgs(
-            DateTime firstOfMonth,
-            List<CalendarDay> calendarDays
-        )
-            : this( DateOnly.FromDateTime( firstOfMonth ), calendarDays )
-        {
-        }
-    }
-
-    public record DowClickedArgs( DayOfWeek DayOfWeek, CalendarArgs CalendarInfo );
-
-    public record DayClickedArgs( DateOnly Day, CalendarArgs CalendarInfo );
-
 }

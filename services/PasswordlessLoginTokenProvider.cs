@@ -11,4 +11,7 @@ public class PasswordlessLoginTokenProvider<TUser>(
     ILogger<DataProtectorTokenProvider<TUser>> logger
 )
     : DataProtectorTokenProvider<TUser>( dataProtectionProvider, options, logger )
-    where TUser : IdentityUser;
+    where TUser : IdentityUser<int>
+{
+    public const string ProviderName = "PasswordlessLoginProvider";
+}

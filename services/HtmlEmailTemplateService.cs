@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazorEmailSiteCommon.emails;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
 
@@ -6,21 +7,21 @@ namespace BlazorEmailSiteCommon.Services;
 
 public interface IHtmlEmailTemplateService
 {
-    Task<string> GenerateLoginEmailAsync(string name, bool adminImpersonating, string verificationLink, string lockOutLink);
+    Task<string> GenerateLoginEmailAsync(string name, bool adminImpersonating, LoginTokenInfo tokenInfo);
     Task<string> GenerateLockedOutEmailAsync(string name);
 }
 
 public class HtmlEmailTemplateService( IServiceProvider serviceProvider, ILoggerFactory loggerFactory )
     : IHtmlEmailTemplateService
 {
-    public async Task<string> GenerateLoginEmailAsync( string name, bool adminImpersonating, string verificationLink, string lockOutLink )
+    public async Task<string> GenerateLoginEmailAsync( string name, bool adminImpersonating, LoginTokenInfo tokenInfo )
     {
         var parameters = ParameterView.FromDictionary( new Dictionary<string, object?>
         {
             { "Name", name },
             { "AdminImpersonating", adminImpersonating },
-            { "VerificationLink", verificationLink },
-            { "LockOutLink", lockOutLink }
+            { "VerificationLink", tokenInfo.VerifyUrl },
+            { "LockOutLink", tokenInfo.LockoutUrl }
         } );
 
         return await GenerateEmailInternalAsync( typeof( LoginEmail ), parameters );
