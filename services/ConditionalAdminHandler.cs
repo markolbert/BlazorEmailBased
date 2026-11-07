@@ -3,26 +3,26 @@ using Microsoft.Extensions.Configuration;
 
 namespace BlazorEmailSiteCommon.Services;
 
-public class ConditionalAdminHandler(IConfiguration config)
+public class ConditionalAdminHandler( IConfiguration config )
     : AuthorizationHandler<ConditionalAdminRequirement>
 {
     protected override Task HandleRequirementAsync(
         AuthorizationHandlerContext context,
-        ConditionalAdminRequirement requirement)
+        ConditionalAdminRequirement requirement
+    )
     {
-        var restrict = config.GetValue<bool>("SiteSettings:RestrictNonAdmins");
+        var restrict = config.GetValue<bool>( "SiteSettings:RestrictNonAdmins" );
 
-        if (!restrict)
+        if( !restrict )
         {
             // flag off: everyone passes, no admin check
-            context.Succeed(requirement);
+            context.Succeed( requirement );
             return Task.CompletedTask;
         }
 
         // flag on: only Administrators pass
-        if (context.User.Identity?.IsAuthenticated == true &&
-            context.User.IsInRole("Administrator"))
-            context.Succeed(requirement);
+        if( context.User.Identity?.IsAuthenticated == true && context.User.IsInRole( "Administrator" ) )
+            context.Succeed( requirement );
 
         return Task.CompletedTask;
     }

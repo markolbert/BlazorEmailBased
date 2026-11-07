@@ -7,8 +7,8 @@ namespace BlazorEmailSiteCommon.Services;
 
 public interface IHtmlEmailTemplateService
 {
-    Task<string> GenerateLoginEmailAsync(string name, bool adminImpersonating, LoginTokenInfo tokenInfo);
-    Task<string> GenerateLockedOutEmailAsync(string name);
+    Task<string> GenerateLoginEmailAsync( string name, bool adminImpersonating, LoginTokenInfo tokenInfo );
+    Task<string> GenerateLockedOutEmailAsync( string name );
 }
 
 public class HtmlEmailTemplateService( IServiceProvider serviceProvider, ILoggerFactory loggerFactory )
@@ -27,25 +27,22 @@ public class HtmlEmailTemplateService( IServiceProvider serviceProvider, ILogger
         return await GenerateEmailInternalAsync( typeof( LoginEmail ), parameters );
     }
 
-    public async Task<string> GenerateLockedOutEmailAsync(string name )
+    public async Task<string> GenerateLockedOutEmailAsync( string name )
     {
-        var parameters = ParameterView.FromDictionary(new Dictionary<string, object?>
-        {
-            { "Name", name }
-        });
+        var parameters = ParameterView.FromDictionary( new Dictionary<string, object?> { { "Name", name } } );
 
-        return await GenerateEmailInternalAsync(typeof(LockedOutEmail), parameters);
+        return await GenerateEmailInternalAsync( typeof( LockedOutEmail ), parameters );
     }
 
     protected async Task<string> GenerateEmailInternalAsync( Type templateType, ParameterView parameters )
     {
-        await using var htmlRenderer = new HtmlRenderer(serviceProvider, loggerFactory);
+        await using var htmlRenderer = new HtmlRenderer( serviceProvider, loggerFactory );
 
-        var html = await htmlRenderer.Dispatcher.InvokeAsync(async () =>
+        var html = await htmlRenderer.Dispatcher.InvokeAsync( async () =>
         {
-            var output = await htmlRenderer.RenderComponentAsync(templateType, parameters);
+            var output = await htmlRenderer.RenderComponentAsync( templateType, parameters );
             return output.ToHtmlString();
-        });
+        } );
 
         return html;
     }

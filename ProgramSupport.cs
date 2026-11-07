@@ -1,4 +1,6 @@
-﻿using BlazorEmailSiteCommon.Middleware;
+﻿using System.Runtime.InteropServices;
+using System.Text;
+using BlazorEmailSiteCommon.Middleware;
 using BlazorEmailSiteCommon.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -9,9 +11,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace BlazorEmailSiteCommon.ProgramSupport;
 
@@ -24,16 +25,22 @@ public static class ProgramSupport
             Encoding.RegisterProvider( CodePagesEncodingProvider.Instance );
     }
 
-    public static WebApplicationBuilder AddServices<TUser, TDbContext>( this WebApplicationBuilder builder, string keyPath, string appName )
+    public static WebApplicationBuilder AddServices<TUser, TDbContext>(
+        this WebApplicationBuilder builder,
+        string keyPath,
+        string appName
+    )
         where TUser : IdentityUser<int>, IAdministrator
         where TDbContext : DbContext
     {
         // Add this to persist keys to a special directory
         // under linux.
         if( RuntimeInformation.IsOSPlatform( OSPlatform.Linux ) )
+        {
             builder.Services.AddDataProtection()
                    .PersistKeysToFileSystem( new DirectoryInfo( keyPath ) )
                    .SetApplicationName( appName );
+        }
 
         // Add services to the container.
         builder.Services.AddRazorComponents()
@@ -68,7 +75,8 @@ public static class ProgramSupport
                .AddRoles<IdentityRole<int>>()
                .AddEntityFrameworkStores<TDbContext>()
                .AddDefaultTokenProviders()
-               .AddTokenProvider<PasswordlessLoginTokenProvider<TUser>>( PasswordlessLoginTokenProvider<TUser>.ProviderName )
+               .AddTokenProvider<PasswordlessLoginTokenProvider<TUser>>(
+                    PasswordlessLoginTokenProvider<TUser>.ProviderName )
                .AddSignInManager();
 
         builder.Services.AddAuthentication( IdentityConstants.ApplicationScheme )
@@ -130,30 +138,30 @@ public static class ProgramSupport
 
         // using a reverse proxy on debian trixie obviates the
         // need to have asp.net handle https redirection
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        if( RuntimeInformation.IsOSPlatform( OSPlatform.Linux ) )
             app.UseForwardedHeaders(); // FIRST
 
         // Configure the HTTP request pipeline.
-        if (!app.Environment.IsDevelopment())
+        if( !app.Environment.IsDevelopment() )
         {
-            app.UseExceptionHandler("/Error", createScopeForErrors: true);
+            app.UseExceptionHandler( "/Error", true );
             app.UseHsts();
         }
 
         // DO NOT UseHttpsRedirection() on Linux behind proxy
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        if( !RuntimeInformation.IsOSPlatform( OSPlatform.Linux ) )
             app.UseHttpsRedirection();
 
         // Keep MapStaticAssets for your CSS/JS frameworks
         app.MapStaticAssets();
 
         // Fall back to standard disk serving for your custom HTML pages
-        app.UseStaticFiles(new StaticFileOptions
+        app.UseStaticFiles( new StaticFileOptions
         {
-            FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
-                Path.Combine(builder.Environment.ContentRootPath, "Static")),
+            FileProvider = new PhysicalFileProvider(
+                Path.Combine( builder.Environment.ContentRootPath, "Static" ) ),
             RequestPath = "/Static"
-        });
+        } );
 
         app.UseMiddleware<MaintenanceMiddleware>();
 

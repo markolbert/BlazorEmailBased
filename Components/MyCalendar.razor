@@ -1,22 +1,21 @@
 ﻿@using System.Text
-
 <div class="calendar-card">
     <div class="calendar-header">
         <button class="btn-submit" @onclick="PreviousMonthAsync">&lt;</button>
         <h2>@CurrentMonthName @CurrentYear</h2>
         <button class="btn-submit" @onclick="NextMonthAsync">&gt;</button>
     </div>
-    
+
     @if( DaysOfWeekClickable )
     {
         <div class="calendar-grid weekdays">
-            <div @onclick="@(() => ToggleDowExclusionAsync(DayOfWeek.Sunday))" style="cursor: pointer;">Sun</div>
-            <div @onclick="@(() => ToggleDowExclusionAsync(DayOfWeek.Monday))" style="cursor: pointer;">Mon</div>
-            <div @onclick="@(() => ToggleDowExclusionAsync(DayOfWeek.Tuesday))" style="cursor: pointer;">Tue</div>
-            <div @onclick="@(() => ToggleDowExclusionAsync(DayOfWeek.Wednesday))" style="cursor: pointer;">Wed</div>
-            <div @onclick="@(() => ToggleDowExclusionAsync(DayOfWeek.Thursday))" style="cursor: pointer;">Thu</div>
-            <div @onclick="@(() => ToggleDowExclusionAsync(DayOfWeek.Friday))" style="cursor: pointer;">Fri</div>
-            <div @onclick="@(() => ToggleDowExclusionAsync(DayOfWeek.Saturday))" style="cursor: pointer;">Sat</div>
+            <div @onclick="@( () => ToggleDowExclusionAsync( DayOfWeek.Sunday ) )" style="cursor: pointer;">Sun</div>
+            <div @onclick="@( () => ToggleDowExclusionAsync( DayOfWeek.Monday ) )" style="cursor: pointer;">Mon</div>
+            <div @onclick="@( () => ToggleDowExclusionAsync( DayOfWeek.Tuesday ) )" style="cursor: pointer;">Tue</div>
+            <div @onclick="@( () => ToggleDowExclusionAsync( DayOfWeek.Wednesday ) )" style="cursor: pointer;">Wed</div>
+            <div @onclick="@( () => ToggleDowExclusionAsync( DayOfWeek.Thursday ) )" style="cursor: pointer;">Thu</div>
+            <div @onclick="@( () => ToggleDowExclusionAsync( DayOfWeek.Friday ) )" style="cursor: pointer;">Fri</div>
+            <div @onclick="@( () => ToggleDowExclusionAsync( DayOfWeek.Saturday ) )" style="cursor: pointer;">Sat</div>
         </div>
     }
     else
@@ -33,16 +32,16 @@
     }
 
     <div class="calendar-grid days">
-        @foreach (var day in _calendarDays)
+        @foreach( var day in _calendarDays )
         {
             if( IsDayCellClickable( day ) )
             {
-                <div class="@GetDayCellClass( day )" 
-                     style="@(string.IsNullOrEmpty(day.BackgroundColor) ? string.Empty : $"background-color: #{day.BackgroundColor};")" 
+                <div class="@GetDayCellClass( day )"
+                     style="@( string.IsNullOrEmpty( day.BackgroundColor ) ? string.Empty : $"background-color: #{day.BackgroundColor};" )"
                      @onclick="() => ToggleDateExclusionAsync( day )">
                     @( day.Date.Day )
-                
-                    @foreach (var colorCode in day.BlockColors ?? Enumerable.Empty<string>())
+
+                    @foreach( var colorCode in day.BlockColors ?? Enumerable.Empty<string>() )
                     {
                         <div style="background-color: @colorCode;">&nbsp;</div>
                     }
@@ -50,11 +49,11 @@
             }
             else
             {
-                <div class="@GetDayCellClass(day)" 
-                     style="@(string.IsNullOrEmpty(day.BackgroundColor) ? string.Empty : $"background-color: #{day.BackgroundColor};")">
+                <div class="@GetDayCellClass( day )"
+                     style="@( string.IsNullOrEmpty( day.BackgroundColor ) ? string.Empty : $"background-color: #{day.BackgroundColor};" )">
                     @( day.Date.Day )
 
-                    @foreach (var colorCode in day.BlockColors ?? Enumerable.Empty<string>())
+                    @foreach( var colorCode in day.BlockColors ?? Enumerable.Empty<string>() )
                     {
                         <div style="background-color: #@colorCode;">&nbsp;</div>
                     }
@@ -78,7 +77,7 @@
     [ Parameter ]
     public EventCallback<DayClickedArgs> DayClicked { get; set; }
 
-    [Parameter]
+    [ Parameter ]
     public Guid RefreshToken { get; set; }
 
     private readonly List<CalendarDay> _calendarDays = [];

@@ -7,6 +7,6 @@ public class PasswordlessLoginTokenProviderOptions : DataProtectionTokenProvider
     public PasswordlessLoginTokenProviderOptions()
     {
         Name = "PasswordlessLoginTokenProvider";
-        TokenLifespan = TimeSpan.FromMinutes(15); // Short lifespan for security
+        TokenLifespan = TimeSpan.FromMinutes( 15 ); // Short lifespan for security
     }
 }

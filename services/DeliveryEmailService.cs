@@ -6,13 +6,14 @@ namespace BlazorEmailSiteCommon.Services;
 public interface IDeliveryEmailService<in TUser>
     where TUser : IdentityUser<int>
 {
-    Task<string?> GetDeliveryEmail( TUser enteredUser );
+    Task<string?> GetDeliveryEmailAsync( TUser enteredUser );
 }
 
-public class DeliveryEmailService<TUser>( UserManager<TUser> userMgr, IConfiguration config ) : IDeliveryEmailService<TUser>
-    where TUser: IdentityUser<int>
+public class DeliveryEmailService<TUser>( UserManager<TUser> userMgr, IConfiguration config )
+    : IDeliveryEmailService<TUser>
+    where TUser : IdentityUser<int>
 {
-    public async Task<string?> GetDeliveryEmail( TUser enteredUser )
+    public async Task<string?> GetDeliveryEmailAsync( TUser enteredUser )
     {
         if( !config.GetValue<bool>( "SiteSettings:RouteLoginsToAdminEmail" ) )
             return enteredUser.Email;

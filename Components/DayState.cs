@@ -1,6 +1,6 @@
 ﻿namespace BlazorEmailSiteCommon.Components;
 
-[Flags]
+[ Flags ]
 public enum DayState
 {
     Clickable = 1 << 0,
