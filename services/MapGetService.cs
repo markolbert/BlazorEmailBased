@@ -81,6 +81,7 @@ public class MapGetService<TUser, TDbContext> : MapGetService
         UserManager<TUser> userManager,
         IHtmlEmailTemplateService templateService,
         IEmailService emailService,
+        IConfiguration config,
         IDbContextFactory<TDbContext> dbContextFactory
     )
     {
@@ -102,11 +103,15 @@ public class MapGetService<TUser, TDbContext> : MapGetService
 
         try
         {
+            var adminEmail = config.GetValue<string>("SiteSettings:AdminEmail")!;
+            var siteName = config.GetValue<string>("SiteSettings:SiteName")!;
+
             var html = await templateService.GenerateLockedOutEmailAsync( user.Email! );
-            await emailService.SendEmailAsync( "mark@arcabama.com",
-                                               "SC Book Dudes Locked Out",
+
+            await emailService.SendEmailAsync( adminEmail,
+                                               $"{siteName} Locked Out",
                                                html,
-                                               "mark@arcabama.com",
+                                               adminEmail,
                                                user.Email! );
         }
 
