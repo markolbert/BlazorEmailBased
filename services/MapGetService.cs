@@ -1,0 +1,138 @@
+﻿using BlazorEmailSiteCommon.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
+
+namespace BlazorEmailSiteCommon;
+
+public abstract class MapGetService
+{
+    public const string AdminImpersonatingUserClaimType = "AdminImpersonatingUser";
+    public const string AdminEmailClaimType = "AdminEmail";
+    public const string OriginalUserNameClaimType = "OriginalUserName";
+    public const string OriginalUserIdClaimType = "OriginalUserId";
+}
+
+public class MapGetService<TUser, TDbContext> : MapGetService
+    where TUser : IdentityUser<int>, IAdministrator
+    where TDbContext : DbContext
+{
+    public async Task<IResult> VerifyMagicLinkAsync(
+        string token,
+        SignInManager<TUser> signInManager,
+        UserManager<TUser> userManager,
+        IConfiguration config,
+        IDbContextFactory<TDbContext> dbContextFactory
+    )
+    {
+        var dbContext = await dbContextFactory.CreateDbContextAsync();
+        var loginTokensSet = dbContext.Set<LoginToken>();
+
+        var loginToken = await loginTokensSet
+           .FirstOrDefaultAsync( t => t.Token == token && !t.Used );
+
+        if( loginToken == null || loginToken.ExpiresUtc < DateOnly.FromDateTime( DateTime.UtcNow ) )
+            return Results.Redirect( "/Static/unauthorized.html" );
+
+        loginToken.Used = true;
+        await dbContext.SaveChangesAsync();
+
+        var originalUser = await GetUserAsync( loginToken.OriginalEmail, token, userManager );
+
+        if( originalUser == null )
+            return Results.BadRequest( "Invalid login request." );
+
+        var adminEmail = config.GetValue<string>( "SiteSettings:AdminEmail" );
+
+        var routeLoginsToAdminEmail = config.GetValue<bool>( "SiteSettings:RouteLoginsToAdminEmail" );
+
+        var adminUser = string.IsNullOrEmpty( adminEmail )
+            ? null
+            : await userManager.FindByEmailAsync( adminEmail );
+
+        if( !routeLoginsToAdminEmail || adminUser == null || !adminUser.IsAdministrator )
+        {
+            // no need to create claims about admin impersonating a user
+            await signInManager.SignInAsync( originalUser, isPersistent: false );
+        }
+        else
+        {
+            // user is valid admin impersonating a user, so store claims
+            await signInManager.SignInWithClaimsAsync( originalUser,
+                                                       isPersistent: false,
+                                                       [
+                                                           new Claim( AdminImpersonatingUserClaimType,
+                                                                      true.ToString() ),
+                                                           new Claim( AdminEmailClaimType, adminEmail! ),
+                                                           new Claim( OriginalUserNameClaimType,
+                                                                      originalUser.UserName! ),
+                                                           new Claim( OriginalUserIdClaimType,
+                                                                      originalUser.Id.ToString() )
+                                                       ] );
+        }
+
+        return Results.Redirect( "/home" );
+    }
+
+    public async Task<IResult> LockoutLinkAsync(
+        string token,
+        UserManager<TUser> userManager,
+        IHtmlEmailTemplateService templateService,
+        IEmailService emailService,
+        IDbContextFactory<TDbContext> dbContextFactory
+    )
+    {
+        var dbContext = await dbContextFactory.CreateDbContextAsync();
+        var loginTokensSet = dbContext.Set<LoginToken>();
+
+        var loginToken = await loginTokensSet
+           .FirstOrDefaultAsync( t => t.Token == token && !t.Used );
+
+        if( loginToken == null || loginToken.ExpiresUtc < DateOnly.FromDateTime( DateTime.UtcNow ) )
+            return Results.Redirect( "/Static/unauthorized.html" );
+
+        loginToken.Used = true;
+        await dbContext.SaveChangesAsync();
+
+        var user = await GetUserAsync( loginToken.OriginalEmail, token, userManager );
+        if( user == null )
+            return Results.BadRequest( "Invalid login request." );
+
+        try
+        {
+            var html = await templateService.GenerateLockedOutEmailAsync( user.Email! );
+            await emailService.SendEmailAsync( "mark@arcabama.com",
+                                               "SC Book Dudes Locked Out",
+                                               html,
+                                               "mark@arcabama.com",
+                                               user.Email! );
+        }
+
+        // ReSharper disable once EmptyGeneralCatchClause
+        catch( Exception )
+        {
+        }
+
+        return Results.Redirect( "/Static/locked-out.html" );
+    }
+
+    private async Task<TUser?> GetUserAsync( string userId, string token, UserManager<TUser> userManager )
+    {
+        var user = await userManager.FindByEmailAsync( userId );
+        if( user == null ) return null;
+
+        var decodedBytes = Microsoft.AspNetCore.WebUtilities.WebEncoders.Base64UrlDecode( token );
+        var cleanToken = System.Text.Encoding.UTF8.GetString( decodedBytes );
+
+        // Verify token against the PasswordlessTokenProvider configuration
+        var isValid = userManager.VerifyUserTokenAsync( user,
+                                                        PasswordlessLoginTokenProvider<TUser>.ProviderName,
+                                                        PasswordlessLoginTokenProvider<TUser>.Purpose,
+                                                        cleanToken )
+                                 .Result;
+
+        return isValid ? user : null;
+    }
+}
