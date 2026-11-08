@@ -1,16 +1,33 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace BlazorEmailSiteCommon.Middleware;
 
-public class MaintenanceMiddleware( RequestDelegate next, IConfiguration config )
+public class MaintenanceMiddleware : IDisposable
 {
+    private readonly IDisposable? _changeSubscription;
+    private readonly RequestDelegate _next;
+
+    private bool _maintenanceModeEnabled;
+
+    public MaintenanceMiddleware(
+        RequestDelegate next, 
+        IOptionsMonitor<SiteSettings> optionsMonitor
+        )
+    {
+        _next = next;
+
+        _maintenanceModeEnabled = optionsMonitor.CurrentValue.MaintenanceModeEnabled;
+
+        _changeSubscription = optionsMonitor.OnChange(x =>
+        {
+            _maintenanceModeEnabled = x.MaintenanceModeEnabled;
+        });
+    }
+
     public async Task InvokeAsync( HttpContext context )
     {
-        // Check your config, database, or feature flag
-        var isMaintenanceMode = config.GetValue<bool>( "MaintenanceMode:Enabled" );
-
-        if( isMaintenanceMode )
+        if( _maintenanceModeEnabled )
         {
             // Block SignalR connections to drop active users and prevent reconnections
             if( context.Request.Path.StartsWithSegments( "/_blazor" ) )
@@ -22,7 +39,7 @@ public class MaintenanceMiddleware( RequestDelegate next, IConfiguration config 
             // Allow the static maintenance page to load
             if( context.Request.Path == "/maintenance.html" )
             {
-                await next( context );
+                await _next( context );
                 return;
             }
 
@@ -31,6 +48,11 @@ public class MaintenanceMiddleware( RequestDelegate next, IConfiguration config 
             return;
         }
 
-        await next( context );
+        await _next( context );
+    }
+
+    public void Dispose()
+    {
+        _changeSubscription?.Dispose();
     }
 }

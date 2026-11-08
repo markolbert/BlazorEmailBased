@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 namespace BlazorEmailSiteCommon;
@@ -15,20 +16,39 @@ public abstract class MapGetService
     public const string OriginalUserIdClaimType = "OriginalUserId";
 }
 
-public class MapGetService<TUser, TDbContext> : MapGetService
+public class MapGetService<TUser, TDbContext> : MapGetService, IDisposable
     where TUser : IdentityUser<int>, IAdministrator
     where TDbContext : DbContext
 {
+    private readonly TDbContext _dbContext;
+    private readonly IDisposable? _changeSubscription;
+
+    private string _adminEmail;
+    private bool _routeLoginsToAdminEmail;
+
+    public MapGetService(
+        IOptionsMonitor<SiteSettings> optionsMonitor,
+        IDbContextFactory<TDbContext> dbContextFactory )
+    {
+        _dbContext = dbContextFactory.CreateDbContext();
+
+        _adminEmail = optionsMonitor.CurrentValue.AdminEmail;
+        _routeLoginsToAdminEmail = optionsMonitor.CurrentValue.RouteLoginsToAdminEmail;
+
+        _changeSubscription = optionsMonitor.OnChange(x =>
+        {
+            _adminEmail = x.AdminEmail;
+            _routeLoginsToAdminEmail = x.RouteLoginsToAdminEmail;
+        });
+    }
+
     public async Task<IResult> VerifyMagicLinkAsync(
         string token,
         SignInManager<TUser> signInManager,
-        UserManager<TUser> userManager,
-        IConfiguration config,
-        IDbContextFactory<TDbContext> dbContextFactory
+        UserManager<TUser> userManager
     )
     {
-        var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var loginTokensSet = dbContext.Set<LoginToken>();
+        var loginTokensSet = _dbContext.Set<LoginToken>();
 
         var loginToken = await loginTokensSet
            .FirstOrDefaultAsync( t => t.Token == token && !t.Used );
@@ -37,22 +57,18 @@ public class MapGetService<TUser, TDbContext> : MapGetService
             return Results.Redirect( "/Static/unauthorized.html" );
 
         loginToken.Used = true;
-        await dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
 
         var originalUser = await GetUserAsync( loginToken.OriginalEmail, token, userManager );
 
         if( originalUser == null )
             return Results.BadRequest( "Invalid login request." );
 
-        var adminEmail = config.GetValue<string>( "SiteSettings:AdminEmail" );
-
-        var routeLoginsToAdminEmail = config.GetValue<bool>( "SiteSettings:RouteLoginsToAdminEmail" );
-
-        var adminUser = string.IsNullOrEmpty( adminEmail )
+        var adminUser = string.IsNullOrEmpty( _adminEmail )
             ? null
-            : await userManager.FindByEmailAsync( adminEmail );
+            : await userManager.FindByEmailAsync( _adminEmail );
 
-        if( !routeLoginsToAdminEmail || adminUser == null || !adminUser.IsAdministrator )
+        if( !_routeLoginsToAdminEmail || adminUser is not { IsAdministrator: true } )
         {
             // no need to create claims about admin impersonating a user
             await signInManager.SignInAsync( originalUser, isPersistent: false );
@@ -65,7 +81,7 @@ public class MapGetService<TUser, TDbContext> : MapGetService
                                                        [
                                                            new Claim( AdminImpersonatingUserClaimType,
                                                                       true.ToString() ),
-                                                           new Claim( AdminEmailClaimType, adminEmail! ),
+                                                           new Claim( AdminEmailClaimType, _adminEmail ),
                                                            new Claim( OriginalUserNameClaimType,
                                                                       originalUser.UserName! ),
                                                            new Claim( OriginalUserIdClaimType,
@@ -139,5 +155,15 @@ public class MapGetService<TUser, TDbContext> : MapGetService
                                  .Result;
 
         return isValid ? user : null;
+    }
+
+    public void Dispose()
+    {
+        if( _dbContext is IDisposable dbContextDisposable )
+            dbContextDisposable.Dispose();
+        else
+            _ = _dbContext.DisposeAsync().AsTask();
+
+        _changeSubscription?.Dispose();
     }
 }

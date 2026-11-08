@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace BlazorEmailSiteCommon.Services;
 
@@ -9,24 +9,46 @@ public interface IDeliveryEmailService<in TUser>
     Task<string?> GetDeliveryEmailAsync( TUser enteredUser );
 }
 
-public class DeliveryEmailService<TUser>( UserManager<TUser> userMgr, IConfiguration config )
-    : IDeliveryEmailService<TUser>
+public class DeliveryEmailService<TUser> : IDeliveryEmailService<TUser>, IDisposable
     where TUser : IdentityUser<int>
 {
+    private readonly UserManager<TUser> _userMgr;
+    private readonly IDisposable? _changeSubscription;
+
+    private bool _routeLoginsToAdminEmail;
+    private string _adminEmail;
+
+    public DeliveryEmailService(
+        UserManager<TUser> userMgr,
+        IOptionsMonitor<SiteSettings> optionsMonitor
+        )
+    {
+        _userMgr = userMgr;
+        _adminEmail = optionsMonitor.CurrentValue.AdminEmail;
+        _routeLoginsToAdminEmail = optionsMonitor.CurrentValue.RouteLoginsToAdminEmail;
+
+        _changeSubscription = optionsMonitor.OnChange(x =>
+        {
+            _routeLoginsToAdminEmail = x.RouteLoginsToAdminEmail;
+            _adminEmail = x.AdminEmail;
+        });
+    }
+
     public async Task<string?> GetDeliveryEmailAsync( TUser enteredUser )
     {
-        if( !config.GetValue<bool>( "SiteSettings:RouteLoginsToAdminEmail" ) )
+        if( !_routeLoginsToAdminEmail || string.IsNullOrEmpty( _adminEmail ) )
             return enteredUser.Email;
 
-        var adminEmail = config.GetValue<string>( "SiteSettings:AdminEmail" );
+        var retVal = await _userMgr.FindByEmailAsync( _adminEmail );
 
-        if( string.IsNullOrEmpty( adminEmail ) )
-            return enteredUser.Email;
-
-        var retVal = await userMgr.FindByEmailAsync( adminEmail );
-
-        return retVal != null && await userMgr.IsInRoleAsync( retVal, "Administrator" )
+        return retVal != null && await _userMgr.IsInRoleAsync( retVal, "Administrator" )
             ? retVal.Email
             : null;
+    }
+
+    public void Dispose()
+    {
+        _userMgr.Dispose();
+        _changeSubscription?.Dispose();
     }
 }

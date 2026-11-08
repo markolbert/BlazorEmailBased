@@ -14,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
-namespace BlazorEmailSiteCommon.ProgramSupport;
+namespace BlazorEmailSiteCommon;
 
 public static class ProgramSupport
 {
@@ -42,6 +42,12 @@ public static class ProgramSupport
                    .SetApplicationName( appName );
         }
 
+        var siteSettingsSection = builder.Configuration.GetSection( SiteSettings.SectionName );
+        builder.Services.Configure<SiteSettings>( siteSettingsSection );
+
+        var siteSettings = siteSettingsSection.Get<SiteSettings>()
+            ?? throw new InvalidOperationException($"Missing configuration for {SiteSettings.SectionName}");
+
         // Add services to the container.
         builder.Services.AddRazorComponents()
                .AddInteractiveServerComponents();
@@ -49,9 +55,7 @@ public static class ProgramSupport
         builder.Services.AddScoped<IEmailService, GraphEmailService>();
         builder.Services.AddScoped( typeof( IHtmlEmailTemplateService ), typeof( HtmlEmailTemplateService ) );
 
-        builder.Services.AddDbContextFactory<TDbContext>( options => options.UseSqlite(
-                                                              builder.Configuration.GetConnectionString(
-                                                                  "DefaultConnection" ) ) );
+        builder.Services.AddDbContextFactory<TDbContext>( options => options.UseSqlite( siteSettings.DefaultConnection) );
 
         builder.Services.AddCascadingAuthenticationState();
 
@@ -82,11 +86,9 @@ public static class ProgramSupport
         builder.Services.AddAuthentication( IdentityConstants.ApplicationScheme )
                .AddIdentityCookies();
 
-        var logoutTime = builder.Configuration.GetValue<int>( "SiteSettings:LoginLinkLifetimeMinutes" );
-
         builder.Services.ConfigureApplicationCookie( options =>
         {
-            options.ExpireTimeSpan = TimeSpan.FromMinutes( logoutTime );
+            options.ExpireTimeSpan = TimeSpan.FromMinutes( siteSettings.LoginLinkLifetimeMinutes );
             options.SlidingExpiration = true;
             options.Cookie.HttpOnly = true;
             options.Cookie.SameSite = SameSiteMode.Lax;

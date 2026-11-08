@@ -1,16 +1,32 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace BlazorEmailSiteCommon.Services;
 
-public sealed class AdministratorAuthorizationHandler<TUser>(
-    UserManager<TUser> userManager,
-    IConfiguration config
-)
-    : AuthorizationHandler<AdministratorRequirement>
+public sealed class AdministratorAuthorizationHandler<TUser> : AuthorizationHandler<AdministratorRequirement>, IDisposable
     where TUser : IdentityUser<int>, IAdministrator
 {
+    private readonly UserManager<TUser> _userManager;
+    private readonly IDisposable? _changeSubscription;
+
+    private bool _routeLoginsToAdminEmail;
+
+    public AdministratorAuthorizationHandler(
+        UserManager<TUser> userManager,
+        IOptionsMonitor<SiteSettings> optionsMonitor
+        )
+    {
+        _userManager = userManager;
+
+        _routeLoginsToAdminEmail = optionsMonitor.CurrentValue.RouteLoginsToAdminEmail;
+
+        _changeSubscription = optionsMonitor.OnChange( x =>
+        {
+            _routeLoginsToAdminEmail = x.RouteLoginsToAdminEmail;
+        });
+    }
+
     protected override async Task HandleRequirementAsync(
         AuthorizationHandlerContext context,
         AdministratorRequirement requirement
@@ -19,11 +35,15 @@ public sealed class AdministratorAuthorizationHandler<TUser>(
         if( context.User.Identity?.IsAuthenticated != true )
             return;
 
-        var member = await userManager.GetUserAsync( context.User );
+        var member = await _userManager.GetUserAsync( context.User );
 
-        var adminIsRegular = config.GetValue<bool>( "TreatAdminAsRegular:Enabled" );
-
-        if( member?.IsAdministrator == true && !adminIsRegular )
+        if( member?.IsAdministrator == true && !_routeLoginsToAdminEmail )
             context.Succeed( requirement );
+    }
+
+    public void Dispose()
+    {
+        _userManager.Dispose();
+        _changeSubscription?.Dispose();
     }
 }
