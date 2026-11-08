@@ -14,4 +14,5 @@ public class PasswordlessLoginTokenProvider<TUser>(
     where TUser : IdentityUser<int>
 {
     public const string ProviderName = "PasswordlessLoginProvider";
+    public const string Purpose = "passwordless-auth";
 }
