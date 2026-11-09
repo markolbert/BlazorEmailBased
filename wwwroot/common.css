@@ -19,8 +19,8 @@ h1:focus {
 }
 
 button.btn-submit {
-    background-color: var(--submit-color);
-    color: var(--submit-text-color);
+    background-color: var(--background-2a);
+    color: var(--text-2a);
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -28,18 +28,18 @@ button.btn-submit {
 }
 
 button.btn-submit:hover {
-    background-color: var(--cancel-color);
-    color: var(--cancel-text-color);
+    background-color: var(--background-2b);
+    color: var(--text-2b);
 }
 
 button.btn-submit:disabled {
-    background-color: var(--submit-disabled-color);
+    background-color: var(--background-disabled);
     cursor: not-allowed;
 }
 
 button.btn-cancel {
-    background-color: var(--cancel-color);
-    color: var(--cancel-text-color);
+    background-color: var(--background-cancel);
+    color: var(--text-cancel);
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -47,18 +47,19 @@ button.btn-cancel {
 }
 
 button.btn-cancel:hover {
-    background-color: var(--cancel-hover-color);
-    color: #1F2937;
+    background-color: var(--background-cancel-hover);
+    color: var(--text-cancel-hover);
 }
 
 button.btn-cancel:disabled {
-    background-color: var(--submit-disabled-color);
+    background-color: var(--background-disabled);
+    color: var(--text-disabled);
     cursor: not-allowed;
 }
 
 button.btn-secondary {
-    background-color: var(--highlight-color3);
-    color: var(--submit-text-color);
+    background-color: var(--background-3b);
+    color: var(--text-3b);
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -66,8 +67,8 @@ button.btn-secondary {
 }
 
 button.btn-secondary:hover {
-    background-color: var(--highlight-color2);
-    color: var(--cancel-text-color);
+    background-color: var(--background-3a);
+    color: var(--text-3a);
 }
 
 div.entry-grid-two-col {
@@ -78,14 +79,16 @@ div.entry-grid-two-col {
 
 div.entry-grid-row:nth-child(odd) {
     display: contents;
-    background-color: var(--highlight-color2);
+    background-color: var(--background-4a);
+    color: var(--text-4a);
     padding: 10px 0px;
     margin-bottom: var(--bottom-margin);
 }
 
 div.entry-grid-row:nth-child(even) {
     display: contents;
-    background-color: var(--highlight-color3);
+    background-color: var(--background-4c);
+    color: var(--text-4c);
     padding: 10px 0px;
     margin-bottom: var(--bottom-margin);
 }
@@ -97,6 +100,12 @@ div.entry-grid-cell, div.entry-grid-click-cell {
 
 div.entry-grid-click-cell {
     cursor: pointer;
+    color: var(--text-4a-link);
+}
+
+div.entry-grid-click-cell:hover {
+    cursor: pointer;
+    text-decoration: underline;
 }
 
 .entry-grid-label {
@@ -111,30 +120,6 @@ div.entry-grid-click-cell {
 
 .entry-grid-input-checkbox {
     padding: 5px;
-}
-
-a.sidebar-link {
-    color: #4CAF50;
-    text-decoration: none;
-}
-
-a.sidebar-link:hover {
-    color: #45a049;
-    text-decoration: underline;
-    cursor: pointer;
-}
-
-a.dinner-link {
-    color: Black;
-    font-style: italic;
-    text-decoration: none;
-}
-
-a.dinner-link:hover {
-    color: Black;
-    font-style: italic;
-    text-decoration: underline;
-    cursor: pointer;
 }
 
 div.my-table {
@@ -156,12 +141,14 @@ div.table-row {
 
 div.table-row:nth-child(odd) {
     display: table-row;
-    background-color: var(--cancel-color);
+    background-color: var(--background-4a);
+    color: var(--text-4a);
 }
 
 div.table-row:nth-child(even) {
     display: table-row;
-    background-color: var(--primary-color);
+    background-color: var(--background-4c);
+    color: var(--text-4c);
 }
 
 div.table-row-uncolored {
@@ -176,7 +163,7 @@ div.table-cell {
 div.table-cell-clickable {
     display: table-cell;
     padding: 10px;
-    color: darkred;
+    color: var(--text-4a-link);
     cursor: pointer;
 }
 
@@ -192,12 +179,14 @@ div.grid-adjacent {
 
 div.grid-adjacent-clickable:nth-child(odd) {
     padding: 10px;
-    background-color: #fae4a7;
+    background-color: var(--background-4a);
+    color: var(--text-4a);
 }
 
 div.grid-adjacent-clickable:nth-child(even) {
     padding: 10px;
-    background-color: #a7f4fa;
+    background-color: var(--background-4c);
+    color: var(--text-4c);
 }
 
 div.grid-adjacent-cell {
@@ -206,7 +195,7 @@ div.grid-adjacent-cell {
 }
 
 div.clickable {
-    color: darkred;
+    color: var(--text-4a-link);
     cursor: pointer;
 }
 
@@ -214,15 +203,11 @@ div.clickable:hover {
     text-decoration: underline;
 }
 
-div.member-entry{
-    padding: 5px;
-    margin-bottom: var(--bottom-margin);
-}
-
 div.add-new-item {
     padding: 5px;
     margin-bottom: var(--bottom-margin);
-    background-color: palegreen;
+    background-color: var(--background-3b);
+    color: var(--text-3b);
     cursor: pointer;
     width: fit-content;
 }
@@ -240,13 +225,15 @@ div.dinner {
     cursor: pointer;
     margin-bottom: var(--bottom-margin);
 }
-    
+
 div.dinner:nth-child(odd) {
-    background-color: var(--highlight-color2);
+    background-color: var(--background-4a);
+    color: var(--text-4a);
 }
 
 div.dinner:nth-child(even) {
-    background-color: var(--highlight-color3);
+    background-color: var(--background-4c);
+    color: var(--text-4c);
 }
 
 .accordion-container {
@@ -289,9 +276,9 @@ div.datagrid{
 
 div.warning-block {
     padding: 10px;
-    background-color: var(--cancel-color);
-    color: var(--cancel-text-color);
-    border: 3px double var(--highlight-color3);
+    background-color: var(--background-3a);
+    color: var(--text-3a);
+    border: 3px double var(--background-4b);
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
     width: fit-content;
 }
