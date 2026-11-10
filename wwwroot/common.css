@@ -28,12 +28,13 @@ button.btn-submit {
 }
 
 button.btn-submit:hover {
-    background-color: var(--background-2b);
-    color: var(--text-2b);
+    background-color: var(--background-2c);
+    color: var(--text-2c);
 }
 
 button.btn-submit:disabled {
-    background-color: var(--background-disabled);
+    background-color: var(--background-2b);
+    color: var(--text-2b);
     cursor: not-allowed;
 }
 
