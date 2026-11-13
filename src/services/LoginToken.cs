@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 // ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
 
-namespace BlazorEmailSiteCommon.Services;
+namespace J4JSoftware.BlazorEmailBased.Services;
 
 public class LoginToken
 {

@@ -1,4 +1,4 @@
-﻿namespace BlazorEmailSiteCommon;
+﻿namespace J4JSoftware.BlazorEmailBased;
 
 public static class Extensions
 {

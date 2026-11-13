@@ -4,7 +4,7 @@ using Microsoft.Graph;
 using Microsoft.Graph.Models;
 using Microsoft.Graph.Users.Item.SendMail;
 
-namespace BlazorEmailSiteCommon.Services;
+namespace J4JSoftware.BlazorEmailBased.Services;
 
 public interface IEmailService
 {

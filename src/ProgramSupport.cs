@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
-using BlazorEmailSiteCommon.Middleware;
-using BlazorEmailSiteCommon.Services;
+using J4JSoftware.BlazorEmailBased.Middleware;
+using J4JSoftware.BlazorEmailBased.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -14,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
-namespace BlazorEmailSiteCommon;
+namespace J4JSoftware.BlazorEmailBased;
 
 public static class ProgramSupport
 {

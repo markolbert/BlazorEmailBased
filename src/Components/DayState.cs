@@ -1,4 +1,4 @@
-﻿namespace BlazorEmailSiteCommon.Components;
+﻿namespace J4JSoftware.BlazorEmailBased.Components;
 
 [ Flags ]
 public enum DayState

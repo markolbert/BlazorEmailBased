@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
-namespace BlazorEmailSiteCommon.Services;
+namespace J4JSoftware.BlazorEmailBased.Services;
 
 public sealed class AdministratorAuthorizationHandler<TUser> : AuthorizationHandler<AdministratorRequirement>, IDisposable
     where TUser : IdentityUser<int>, IAdministrator

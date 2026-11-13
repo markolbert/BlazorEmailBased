@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace BlazorEmailSiteCommon.Services;
+namespace J4JSoftware.BlazorEmailBased.Services;
 
 public class PasswordlessLoginTokenProvider<TUser>(
     IDataProtectionProvider dataProtectionProvider,

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BlazorEmailSiteCommon;
+namespace J4JSoftware.BlazorEmailBased;
 
 public class LoginFormModel
 {

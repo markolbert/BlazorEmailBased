@@ -1,4 +1,4 @@
-﻿namespace BlazorEmailSiteCommon.Services;
+﻿namespace J4JSoftware.BlazorEmailBased.Services;
 
 public interface IAdministrator
 {

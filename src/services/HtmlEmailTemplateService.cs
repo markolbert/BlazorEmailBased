@@ -1,9 +1,9 @@
-﻿using BlazorEmailSiteCommon.emails;
+﻿using J4JSoftware.BlazorEmailBased.emails;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
 
-namespace BlazorEmailSiteCommon.Services;
+namespace J4JSoftware.BlazorEmailBased.Services;
 
 public interface IHtmlEmailTemplateService
 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace BlazorEmailSiteCommon.Middleware;
+namespace J4JSoftware.BlazorEmailBased.Middleware;
 
 public class MaintenanceMiddleware : IDisposable
 {

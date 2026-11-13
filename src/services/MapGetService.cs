@@ -1,4 +1,4 @@
-﻿using BlazorEmailSiteCommon.Services;
+﻿using J4JSoftware.BlazorEmailBased.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
-namespace BlazorEmailSiteCommon;
+namespace J4JSoftware.BlazorEmailBased;
 
 public abstract class MapGetService
 {
