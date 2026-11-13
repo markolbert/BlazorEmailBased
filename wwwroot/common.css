@@ -123,6 +123,10 @@ div.entry-grid-click-cell:hover {
     padding: 5px;
 }
 
+.entry-grid-input-select {
+    padding: 5px;
+}
+
 div.my-table {
     display: table;
     table-layout: auto;
