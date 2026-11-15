@@ -24,13 +24,13 @@ public class DeliveryEmailService<TUser> : IDeliveryEmailService<TUser>, IDispos
         )
     {
         _userMgr = userMgr;
-        _adminEmail = optionsMonitor.CurrentValue.AdminEmail;
+        _adminEmail = optionsMonitor.CurrentValue.PreferredAdminEmail;
         _routeLoginsToAdminEmail = optionsMonitor.CurrentValue.RouteLoginsToAdminEmail;
 
         _changeSubscription = optionsMonitor.OnChange(x =>
         {
             _routeLoginsToAdminEmail = x.RouteLoginsToAdminEmail;
-            _adminEmail = x.AdminEmail;
+            _adminEmail = x.PreferredAdminEmail;
         });
     }
 

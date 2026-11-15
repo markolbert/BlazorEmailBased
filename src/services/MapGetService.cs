@@ -32,12 +32,12 @@ public class MapGetService<TUser, TDbContext> : MapGetService, IDisposable
     {
         _dbContext = dbContextFactory.CreateDbContext();
 
-        _adminEmail = optionsMonitor.CurrentValue.AdminEmail;
+        _adminEmail = optionsMonitor.CurrentValue.PreferredAdminEmail;
         _routeLoginsToAdminEmail = optionsMonitor.CurrentValue.RouteLoginsToAdminEmail;
 
         _changeSubscription = optionsMonitor.OnChange(x =>
         {
-            _adminEmail = x.AdminEmail;
+            _adminEmail = x.PreferredAdminEmail;
             _routeLoginsToAdminEmail = x.RouteLoginsToAdminEmail;
         });
     }
