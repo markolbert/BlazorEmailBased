@@ -251,37 +251,24 @@ div.dinner:nth-child(even) {
     color: var(--row-text-even);
 }
 
-.accordion-container {
+.accordion {
     width: max-content;
+}
+
+.accordion details {
+    border: 1px solid #ccc;
+    border-radius: 6px;
     margin-bottom: var(--bottom-margin);
 }
 
-.accordion-header {
+.accordion summary {
     cursor: pointer;
-    color: purple;
-    margin: 5px 0px 5px 0px;
+    padding: 10px 10px 5px 0px;
+    margin-left: 15px;
 }
 
-.accordion-collapse {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 0.3s ease-out;
-    margin-bottom: var(--bottom-margin);
-}
-
-.accordion-collapse.is-open {
-    grid-template-rows: 1fr;
-    margin-bottom: 0px;
-}
-
-.accordion-content {
-    overflow: hidden;
-    padding: 0 1rem;
-    transition: padding 0.3s ease-out;
-}
-
-.accordion-collapse.is-open .accordion-content {
-    padding: 1rem;
+details ul.accordion-list {
+    margin: 5px 10px 5px 40px;
 }
 
 div.datagrid{
