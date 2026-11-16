@@ -2,6 +2,10 @@ h1:focus {
     outline: none;
 }
 
+.text-danger {
+    color: var(--text-danger);
+}
+
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
 }
