@@ -7,18 +7,33 @@ namespace J4JSoftware.BlazorEmailBased.Services;
 
 public interface IHtmlEmailTemplateService
 {
-    Task<string> GenerateLoginEmailAsync( string name, bool adminImpersonating, LoginTokenInfo tokenInfo );
+    Task<string> GenerateLoginEmailAsync(
+        string name,
+        string tagLine,
+        string accessSlug,
+        bool adminImpersonating,
+        LoginTokenInfo tokenInfo
+    );
+
     Task<string> GenerateLockedOutEmailAsync( string name );
 }
 
 public class HtmlEmailTemplateService( IServiceProvider serviceProvider, ILoggerFactory loggerFactory )
     : IHtmlEmailTemplateService
 {
-    public async Task<string> GenerateLoginEmailAsync( string name, bool adminImpersonating, LoginTokenInfo tokenInfo )
+    public async Task<string> GenerateLoginEmailAsync(
+        string name,
+        string tagLine,
+        string accessSlug,
+        bool adminImpersonating,
+        LoginTokenInfo tokenInfo
+    )
     {
         var parameters = ParameterView.FromDictionary( new Dictionary<string, object?>
         {
             { "Name", name },
+            { "TagLine", tagLine },
+            { "AccessSlug", accessSlug },
             { "AdminImpersonating", adminImpersonating },
             { "VerificationLink", tokenInfo.VerifyUrl },
             { "LockOutLink", tokenInfo.LockoutUrl }
