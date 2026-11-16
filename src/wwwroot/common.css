@@ -43,8 +43,8 @@ button.btn-primary:disabled {
 }
 
 button.btn-cancel {
-    background-color: var(--cancel-btn-background);
-    color: var(--cancel-btn-text);
+    background-color: var(--btn-cancel-background);
+    color: var(--btn-cancel-text);
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -52,13 +52,13 @@ button.btn-cancel {
 }
 
 button.btn-cancel:hover {
-    background-color: var(--cancel-btn-background-hover);
-    color: var(--cancel-btn-text-hover);
+    background-color: var(--btn-cancel-background-hover);
+    color: var(--btn-cancel-text-hover);
 }
 
 button.btn-cancel:disabled {
-    background-color: var(--btn-disabled-background);
-    color: var(--btn-disabled-text);
+    background-color: var(--btn-cancel-background-disabled);
+    color: var(--btn-cancel-text-disabled);
     cursor: not-allowed;
 }
 
