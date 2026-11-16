@@ -18,29 +18,29 @@ h1:focus {
     content: "An error has occurred."
 }
 
-button.btn-submit {
-    background-color: var(--background-2a);
-    color: var(--text-2a);
+button.btn-primary {
+    background-color: var(--btn-primary-background);
+    color: var(--primary-btn-text);
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
 
-button.btn-submit:hover {
-    background-color: var(--background-2c);
-    color: var(--text-2c);
+button.btn-primary:hover {
+    background-color: var(--btn-primary-background-hover);
+    color: var(--primary-btn-text-hover);
 }
 
-button.btn-submit:disabled {
-    background-color: var(--background-2b);
-    color: var(--text-2b);
+button.btn-primary:disabled {
+    background-color: var(--btn-primary-background-disabled);
+    color: var(--primary-btn-text-disabled);
     cursor: not-allowed;
 }
 
 button.btn-cancel {
-    background-color: var(--background-cancel);
-    color: var(--text-cancel);
+    background-color: var(--cancel-btn-background);
+    color: var(--cancel-btn-text);
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -48,19 +48,19 @@ button.btn-cancel {
 }
 
 button.btn-cancel:hover {
-    background-color: var(--background-cancel-hover);
-    color: var(--text-cancel-hover);
+    background-color: var(--cancel-btn-background-hover);
+    color: var(--cancel-btn-text-hover);
 }
 
 button.btn-cancel:disabled {
-    background-color: var(--background-disabled);
-    color: var(--text-disabled);
+    background-color: var(--btn-disabled-background);
+    color: var(--btn-disabled-text);
     cursor: not-allowed;
 }
 
 button.btn-secondary {
-    background-color: var(--background-3b);
-    color: var(--text-3b);
+    background-color: var(--btn-secondary-background);
+    color: var(--btn-secondary-text);
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -68,8 +68,8 @@ button.btn-secondary {
 }
 
 button.btn-secondary:hover {
-    background-color: var(--background-3a);
-    color: var(--text-3a);
+    background-color: var(--btn-secondary-background-hover);
+    color: var(--btn-secondary-text-hover);
 }
 
 div.entry-grid-two-col {
@@ -80,16 +80,16 @@ div.entry-grid-two-col {
 
 div.entry-grid-row:nth-child(odd) {
     display: contents;
-    background-color: var(--background-4a);
-    color: var(--text-4a);
+    background-color: var(--row-background-odd);
+    color: var(--row-text-odd);
     padding: 10px 0px;
     margin-bottom: var(--bottom-margin);
 }
 
 div.entry-grid-row:nth-child(even) {
     display: contents;
-    background-color: var(--background-4c);
-    color: var(--text-4c);
+    background-color: var(--row-background-even);
+    color: var(--row-text-even);
     padding: 10px 0px;
     margin-bottom: var(--bottom-margin);
 }
@@ -101,7 +101,7 @@ div.entry-grid-cell, div.entry-grid-click-cell {
 
 div.entry-grid-click-cell {
     cursor: pointer;
-    color: var(--text-4a-link);
+    color: var(--row-text-odd-link);
 }
 
 div.entry-grid-click-cell:hover {
@@ -130,7 +130,6 @@ div.entry-grid-click-cell:hover {
 div.my-table {
     display: table;
     table-layout: auto;
-    width: max-content;
     border-collapse: separate;
     border-spacing: 0 12px;
 }
@@ -146,14 +145,14 @@ div.table-row {
 
 div.table-row:nth-child(odd) {
     display: table-row;
-    background-color: var(--background-4a);
-    color: var(--text-4a);
+    background-color: var(--row-background-odd);
+    color: var(--row-text-odd);
 }
 
 div.table-row:nth-child(even) {
     display: table-row;
-    background-color: var(--background-4c);
-    color: var(--text-4c);
+    background-color: var(--row-background-even);
+    color: var(--row-text-even);
 }
 
 div.table-row-uncolored {
@@ -165,10 +164,17 @@ div.table-cell {
     padding: 10px;
 }
 
+div.table-cell-header {
+    display: table-cell;
+    padding: 10px;
+    vertical-align: bottom;
+    justify-content: center;
+}
+
 div.table-cell-clickable {
     display: table-cell;
     padding: 10px;
-    color: var(--text-4a-link);
+    color: var(--row-text-odd-link);
     cursor: pointer;
 }
 
@@ -184,14 +190,14 @@ div.grid-adjacent {
 
 div.grid-adjacent-clickable:nth-child(odd) {
     padding: 10px;
-    background-color: var(--background-4a);
-    color: var(--text-4a);
+    background-color: var(--row-background-odd);
+    color: var(--row-text-odd);
 }
 
 div.grid-adjacent-clickable:nth-child(even) {
     padding: 10px;
-    background-color: var(--background-4c);
-    color: var(--text-4c);
+    background-color: var(--row-background-even);
+    color: var(--row-text-even);
 }
 
 div.grid-adjacent-cell {
@@ -200,7 +206,7 @@ div.grid-adjacent-cell {
 }
 
 div.clickable {
-    color: var(--text-4a-link);
+    color: var(--row-text-odd-link);
     cursor: pointer;
 }
 
@@ -211,8 +217,8 @@ div.clickable:hover {
 div.add-new-item {
     padding: 5px;
     margin-bottom: var(--bottom-margin);
-    background-color: var(--background-3b);
-    color: var(--text-3b);
+    background-color: var(--secondary-btn-background);
+    color: var(--secondary-btn-text);
     cursor: pointer;
     width: fit-content;
 }
@@ -232,13 +238,13 @@ div.dinner {
 }
 
 div.dinner:nth-child(odd) {
-    background-color: var(--background-4a);
-    color: var(--text-4a);
+    background-color: var(--row-background-odd);
+    color: var(--row-text-odd);
 }
 
 div.dinner:nth-child(even) {
-    background-color: var(--background-4c);
-    color: var(--text-4c);
+    background-color: var(--row-background-even);
+    color: var(--row-text-even);
 }
 
 .accordion-container {
@@ -281,9 +287,9 @@ div.datagrid{
 
 div.warning-block {
     padding: 10px;
-    background-color: var(--background-3a);
-    color: var(--text-3a);
-    border: 3px double var(--background-4b);
+    background-color: var(--warning-background);
+    color: var(--warning-text);
+    border: 3px double var(--warning-border);
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
     width: fit-content;
 }
