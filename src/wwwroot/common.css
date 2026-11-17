@@ -123,12 +123,13 @@ div.table-cell-header {
 div.table-cell-clickable {
     display: table-cell;
     padding: 10px;
-    color: var(--row-text-odd-link);
+    color: var(--row-text-odd);
     cursor: pointer;
 }
 
 div.table-cell-clickable:hover {
-    text-decoration: underline;
+    text-decoration: none;
+    color: var(--row-text-odd-link);
 }
 
 div.grid-adjacent {
