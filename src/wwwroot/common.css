@@ -252,7 +252,7 @@ div.dinner:nth-child(even) {
 }
 
 .accordion {
-    width: max-content;
+    box-sizing: border-box;
 }
 
 .accordion details {
