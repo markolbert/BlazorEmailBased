@@ -24,7 +24,7 @@ h1:focus {
 
 button.btn-primary {
     background-color: var(--btn-primary-background);
-    color: var(--primary-btn-text);
+    color: var(--btn-primary-text);
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -33,12 +33,12 @@ button.btn-primary {
 
 button.btn-primary:hover {
     background-color: var(--btn-primary-background-hover);
-    color: var(--primary-btn-text-hover);
+    color: var(--btn-primary-text-hover);
 }
 
 button.btn-primary:disabled {
     background-color: var(--btn-primary-background-disabled);
-    color: var(--primary-btn-text-disabled);
+    color: var(--btn-primary-text-disabled);
     cursor: not-allowed;
 }
 
