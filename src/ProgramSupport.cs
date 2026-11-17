@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace J4JSoftware.BlazorEmailBased;
 
@@ -28,7 +29,8 @@ public static class ProgramSupport
     public static WebApplicationBuilder AddServices<TUser, TDbContext>(
         this WebApplicationBuilder builder,
         string keyPath,
-        string appName
+        string appName,
+        bool enableEfLogging = false
     )
         where TUser : IdentityUser<int>, IAdministrator
         where TDbContext : DbContext
@@ -56,7 +58,16 @@ public static class ProgramSupport
         builder.Services.AddScoped<IEmailService, GraphEmailService>();
         builder.Services.AddScoped(typeof(IHtmlEmailTemplateService), typeof(HtmlEmailTemplateService));
 
-        builder.Services.AddDbContextFactory<TDbContext>(options => options.UseSqlite(siteSettings.DefaultConnection));
+        builder.Services.AddDbContextFactory<TDbContext>( options =>
+        {
+            options.UseSqlite( siteSettings.DefaultConnection );
+
+            if( !enableEfLogging )
+                return;
+
+            options.LogTo( Console.WriteLine, [DbLoggerCategory.Database.Command.Name], LogLevel.Information )
+                   .EnableSensitiveDataLogging();
+        } );
 
         builder.Services.AddCascadingAuthenticationState();
 
