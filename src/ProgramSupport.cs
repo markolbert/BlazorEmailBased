@@ -142,6 +142,7 @@ public static class ProgramSupport
 
         builder.Services.AddScoped<ILoginTokenService<TUser>, LoginTokenService<TUser>>();
         builder.Services.AddScoped<IDeliveryEmailService<TUser>, DeliveryEmailService<TUser>>();
+        builder.Services.AddScoped<NextScheduledEvent>();
 
         return builder;
     }
