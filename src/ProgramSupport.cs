@@ -164,7 +164,7 @@ public static class ProgramSupport
         }
 
         // DO NOT UseHttpsRedirection() on Linux behind proxy
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && !app.Environment.IsDevelopment())
             app.UseHttpsRedirection();
 
         // Keep MapStaticAssets for your CSS/JS frameworks
