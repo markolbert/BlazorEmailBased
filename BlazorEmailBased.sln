@@ -5,10 +5,23 @@ VisualStudioVersion = 18.12.12405.243
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorEmailBased", "src\BlazorEmailBased.csproj", "{C9C835DD-5ABF-D6C4-19F4-5401E6F9886B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{56E41CDC-2B38-4B7F-87F3-AB63E26D0F20}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "externals", "externals", "{56E41CDC-2B38-4B7F-87F3-AB63E26D0F20}"
 	ProjectSection(SolutionItems) = preProject
+		docs\background.md = docs\background.md
 		LICENSE.md = LICENSE.md
 		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{70F11524-4A98-4B04-83B1-ECCE207BE69A}"
+	ProjectSection(SolutionItems) = preProject
+		docs\background.md = docs\background.md
+		docs\dedication.md = docs\dedication.md
+		docs\index.md = docs\index.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lessons-learned", "lessons-learned", "{E3931A2B-941F-4703-AE08-EFAB89E719E8}"
+	ProjectSection(SolutionItems) = preProject
+		docs\lessons-learned\using-ai.md = docs\lessons-learned\using-ai.md
 	EndProjectSection
 EndProject
 Global
@@ -24,6 +37,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{70F11524-4A98-4B04-83B1-ECCE207BE69A} = {56E41CDC-2B38-4B7F-87F3-AB63E26D0F20}
+		{E3931A2B-941F-4703-AE08-EFAB89E719E8} = {70F11524-4A98-4B04-83B1-ECCE207BE69A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AADC46FC-296F-4C06-92E7-AEF8A869ECB0}
