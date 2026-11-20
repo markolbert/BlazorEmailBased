@@ -11,7 +11,7 @@ Some [background](docs/background.md) on why I wrote this library.
 
 ## Lessons Learned
 
-    - [On the Use of AI](docs/lessons-learned/using-ai.md)
+- [On the Use of AI](docs/lessons-learned/using-ai.md)
 
 ## API Reference
 
