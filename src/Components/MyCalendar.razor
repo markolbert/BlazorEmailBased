@@ -19,6 +19,7 @@
  with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
 *@
 
+@using System.Globalization
 @using System.Text
 
 <div class="calendar-card">
@@ -99,13 +100,10 @@
     [ Parameter ]
     public EventCallback<DayClickedArgs> DayClicked { get; set; }
 
-    [ Parameter ]
-    public Guid RefreshToken { get; set; }
-
     private readonly List<CalendarDay> _calendarDays = [];
 
     private DateTime _firstOfMonth = DateTime.Today.AddDays( -DateTime.Today.Day + 1 );
-    private string CurrentMonthName => _firstOfMonth.ToString( "MMMM" );
+    private string CurrentMonthName => _firstOfMonth.ToString( "MMMM", CultureInfo.CurrentCulture );
     private int CurrentYear => _firstOfMonth.Year;
 
     public async Task Regenerate()
@@ -115,7 +113,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
         await GetCalendarDaysAsync();
     }
 
