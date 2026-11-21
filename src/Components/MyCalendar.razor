@@ -95,10 +95,10 @@
     public EventCallback<CalendarArgs> UpdateCalendarInfo { get; set; }
 
     [ Parameter ]
-    public EventCallback<DowClickedArgs> DayOfWeekClicked { get; set; }
+    public EventCallback<DayOfWeek> DayOfWeekClicked { get; set; }
 
     [ Parameter ]
-    public EventCallback<DayClickedArgs> DayClicked { get; set; }
+    public EventCallback<DateOnly> DayClicked { get; set; }
 
     private readonly List<CalendarDay> _calendarDays = [];
 
@@ -157,14 +157,14 @@
 
     private async Task ToggleDateExclusionAsync( CalendarDay calDay )
     {
-        await DayClicked.InvokeAsync( new DayClickedArgs( calDay.Date, new CalendarArgs( _firstOfMonth, _calendarDays ) ) );
+        await DayClicked.InvokeAsync( calDay.Date );
 
         await GetCalendarDaysAsync();
     }
 
     private async Task ToggleDowExclusionAsync( DayOfWeek dow )
     {
-        await DayOfWeekClicked.InvokeAsync( new DowClickedArgs( dow, new CalendarArgs( _firstOfMonth, _calendarDays ) ) );
+        await DayOfWeekClicked.InvokeAsync( dow );
 
         await GetCalendarDaysAsync();
     }
