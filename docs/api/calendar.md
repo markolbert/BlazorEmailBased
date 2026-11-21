@@ -51,25 +51,23 @@ is raised by the calendar in the following situations:
 - the calendar's `Regenerate()` method was called
 - the calendar was moved to the prior month
 - the calendar was moved to the next month
-- a specific day was clicked
-- a specific day of the week header cell ("Tuesday") was clicked
 
 The callback gives the page on which the calendar is embedded a chance
 to define what the calendar should look like given its current state. It
 does this by passing a `List<CalendarDay>` value containing entries for
-every day in the calendar to be displayed to the calling page, letting it
+every day in the calendar to be displayed, letting the calling page
 define things like background colors for selected or unselected days.
 
 #### Day of Week Header Cell Was Clicked
 
 ```csharp
 [ Parameter ]
-public EventCallback<DowClickedArgs> DayOfWeekClicked { get; set; }
+public EventCallback<DayOfWeek> DayOfWeekClicked { get; set; }
 ```
 
 ```csharp
 [ Parameter ]
-public EventCallback<DayClickedArgs> DayClicked { get; set; }
+public EventCallback<DateOnly> DayClicked { get; set; }
 ```
 
 ## Usage
