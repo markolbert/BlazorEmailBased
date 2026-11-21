@@ -1,6 +1,7 @@
 # BlazorEmailBased
 
-A Razor class library supporting sites that emails users to grant access
+A Razor class library supporting **Blazor server apps** that email users
+to grant access
 
 I hope you find this project and the related code bases I'll discuss
 useful. While I doubt you'll want to use this package directly, I hope it,
