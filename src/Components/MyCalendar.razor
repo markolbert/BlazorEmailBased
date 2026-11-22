@@ -95,10 +95,10 @@
     public EventCallback<CalendarArgs> UpdateCalendarInfo { get; set; }
 
     [ Parameter ]
-    public EventCallback<DayOfWeek> DayOfWeekClicked { get; set; }
+    public EventCallback<DowClickedArgs> DayOfWeekClicked { get; set; }
 
     [ Parameter ]
-    public EventCallback<DateOnly> DayClicked { get; set; }
+    public EventCallback<CalendarDay> DayClicked { get; set; }
 
     private readonly List<CalendarDay> _calendarDays = [];
 
@@ -126,14 +126,14 @@
         // Padding days from previous month
         for( var i = startDayOfWeek - 1; i >= 0; i-- )
         {
-            _calendarDays.Add( CalendarDay.Create( DateOnly.FromDateTime( _firstOfMonth.AddDays( -i - 1 ) ), ref _firstOfMonth ) );
+            _calendarDays.Add( new CalendarDay( DateOnly.FromDateTime( _firstOfMonth.AddDays( -i - 1 ) ) ) );
         }
 
         // Current month days
         for( var i = 1; i <= totalDaysInMonth; i++ )
         {
             var date = new DateTime( _firstOfMonth.Year, _firstOfMonth.Month, i );
-            _calendarDays.Add( CalendarDay.Create( DateOnly.FromDateTime( date ), ref _firstOfMonth ) );
+            _calendarDays.Add( new CalendarDay( DateOnly.FromDateTime( date ) ) );
         }
 
         await UpdateCalendarInfo.InvokeAsync( new CalendarArgs( _firstOfMonth, _calendarDays ) );
@@ -157,16 +157,29 @@
 
     private async Task ToggleDateExclusionAsync( CalendarDay calDay )
     {
-        await DayClicked.InvokeAsync( calDay.Date );
-
-        await GetCalendarDaysAsync();
+        await DayClicked.InvokeAsync( calDay );
     }
 
     private async Task ToggleDowExclusionAsync( DayOfWeek dow )
     {
-        await DayOfWeekClicked.InvokeAsync( dow );
+        var firstDayDisplayed = DateOnly.FromDateTime( _firstOfMonth.AddDays( -(int) _firstOfMonth.DayOfWeek ) );
+        var curDow = firstDayDisplayed.AddDays( (int) dow );
 
-        await GetCalendarDaysAsync();
+        var dowDisplayed = new List<CalendarDay>();
+
+        while( curDow.Month == _firstOfMonth.Month )
+        {
+            // have to grab CalendarDay from the current display
+            // list so when its display parameters get adjusted the display
+            // will update to reflect the changes
+            dowDisplayed.Add( _calendarDays.First(cd=>cd.Date == curDow) );
+
+            curDow = curDow.AddDays( 7 );
+        }
+
+        var args = new DowClickedArgs( dow, dowDisplayed );
+
+        await DayOfWeekClicked.InvokeAsync( args );
     }
 
     private static string GetDayCellClass( CalendarDay calDay )

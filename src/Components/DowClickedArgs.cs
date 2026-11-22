@@ -21,4 +21,4 @@
 
 namespace J4JSoftware.BlazorEmailBased.Components;
 
-public record DowClickedArgs( DayOfWeek DayOfWeek, CalendarArgs CalendarInfo );
+public record DowClickedArgs( DayOfWeek DayOfWeek, List<CalendarDay> DaysDisplayed );
