@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 // Copyright (c) 2026 Mark A. Olbert 
 // https://www.JumpForJoySoftware.com
 // CalendarDay.cs
@@ -17,22 +18,21 @@
 // 
 // You should have received a copy of the GNU General Public License along 
 // with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
-#endregion
 
-using Microsoft.Graph.Models;
+#endregion
 
 namespace J4JSoftware.BlazorEmailBased.Components;
 
 public class CalendarDay
 {
-   internal CalendarDay(
+    internal CalendarDay(
         DateOnly date
     )
     {
         Date = date;
         FirstOfMonth = date.AddDays( -date.Day + 1 );
         InCurrentMonth = date.Month == FirstOfMonth.Month && date.Year == FirstOfMonth.Year;
-        InThePast = date < DateOnly.FromDateTime(DateTime.Today);
+        InThePast = date < DateOnly.FromDateTime( DateTime.Today );
     }
 
     public DateOnly Date { get; }

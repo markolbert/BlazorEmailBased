@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 // Copyright (c) 2026 Mark A. Olbert 
 // https://www.JumpForJoySoftware.com
 // LoginTokenService.cs
@@ -17,13 +18,14 @@
 // 
 // You should have received a copy of the GNU General Public License along 
 // with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
+
 #endregion
 
+using System.Text;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
-using System.Text;
 
 namespace J4JSoftware.BlazorEmailBased.Services;
 
@@ -52,17 +54,14 @@ public class LoginTokenService<TUser> : LoginTokenService, ILoginTokenService<TU
         UserManager<TUser> userMgr,
         NavigationManager navMgr,
         IOptionsMonitor<SiteSettings> optionsMonitor
-        )
+    )
     {
         _userMgr = userMgr;
         _navMgr = navMgr;
 
         _lifetime = optionsMonitor.CurrentValue.LoginLinkLifetimeMinutes;
 
-        _changeSubscription = optionsMonitor.OnChange(x =>
-        {
-            _lifetime = x.LoginLinkLifetimeMinutes;
-        });
+        _changeSubscription = optionsMonitor.OnChange( x => { _lifetime = x.LoginLinkLifetimeMinutes; } );
     }
 
     public async Task<LoginTokenInfo> GetTokenInfoAsync( TUser user )
@@ -84,10 +83,10 @@ public class LoginTokenService<TUser> : LoginTokenService, ILoginTokenService<TU
         };
 
         var verifyUrl = _navMgr.GetUriWithQueryParameters( $"{_navMgr.BaseUri}{VerifyMagicLinkPath}",
-                                                          new Dictionary<string, object?> { { "token", token } } );
+                                                           new Dictionary<string, object?> { { "token", token } } );
 
         var lockoutUrl = _navMgr.GetUriWithQueryParameters( $"{_navMgr.BaseUri}{LockoutLinkPath}",
-                                                           new Dictionary<string, object?> { { "token", token } } );
+                                                            new Dictionary<string, object?> { { "token", token } } );
 
         return new LoginTokenInfo( loginToken, verifyUrl, lockoutUrl );
     }

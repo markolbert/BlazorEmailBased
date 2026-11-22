@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 // Copyright (c) 2026 Mark A. Olbert 
 // https://www.JumpForJoySoftware.com
 // DeliveryEmailService.cs
@@ -17,6 +18,7 @@
 // 
 // You should have received a copy of the GNU General Public License along 
 // with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
+
 #endregion
 
 using Microsoft.AspNetCore.Identity;
@@ -42,17 +44,17 @@ public class DeliveryEmailService<TUser> : IDeliveryEmailService<TUser>, IDispos
     public DeliveryEmailService(
         UserManager<TUser> userMgr,
         IOptionsMonitor<SiteSettings> optionsMonitor
-        )
+    )
     {
         _userMgr = userMgr;
         _adminEmail = optionsMonitor.CurrentValue.PreferredAdminEmail;
         _routeLoginsToAdminEmail = optionsMonitor.CurrentValue.RouteLoginsToAdminEmail;
 
-        _changeSubscription = optionsMonitor.OnChange(x =>
+        _changeSubscription = optionsMonitor.OnChange( x =>
         {
             _routeLoginsToAdminEmail = x.RouteLoginsToAdminEmail;
             _adminEmail = x.PreferredAdminEmail;
-        });
+        } );
     }
 
     public async Task<string?> GetDeliveryEmailAsync( TUser enteredUser )

@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 // Copyright (c) 2026 Mark A. Olbert 
 // https://www.JumpForJoySoftware.com
 // MaintenanceMiddleware.cs
@@ -17,6 +18,7 @@
 // 
 // You should have received a copy of the GNU General Public License along 
 // with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
+
 #endregion
 
 using Microsoft.AspNetCore.Http;
@@ -32,18 +34,15 @@ public class MaintenanceMiddleware : IDisposable
     private bool _maintenanceModeEnabled;
 
     public MaintenanceMiddleware(
-        RequestDelegate next, 
+        RequestDelegate next,
         IOptionsMonitor<SiteSettings> optionsMonitor
-        )
+    )
     {
         _next = next;
 
         _maintenanceModeEnabled = optionsMonitor.CurrentValue.MaintenanceModeEnabled;
 
-        _changeSubscription = optionsMonitor.OnChange(x =>
-        {
-            _maintenanceModeEnabled = x.MaintenanceModeEnabled;
-        });
+        _changeSubscription = optionsMonitor.OnChange( x => { _maintenanceModeEnabled = x.MaintenanceModeEnabled; } );
     }
 
     public async Task InvokeAsync( HttpContext context )

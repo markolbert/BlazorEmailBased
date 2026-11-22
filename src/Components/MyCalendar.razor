@@ -1,4 +1,6 @@
-﻿@*
+﻿@using System.Globalization
+@using System.Text
+@*
  Copyright (c) 2026 Mark A. Olbert
  https://www.JumpForJoySoftware.com
  MyCalendar.razor
@@ -18,9 +20,6 @@
  You should have received a copy of the GNU General Public License along 
  with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
 *@
-
-@using System.Globalization
-@using System.Text
 
 <div class="calendar-card">
     <div class="calendar-header">
@@ -172,7 +171,7 @@
             // have to grab CalendarDay from the current display
             // list so when its display parameters get adjusted the display
             // will update to reflect the changes
-            dowDisplayed.Add( _calendarDays.First(cd=>cd.Date == curDow) );
+            dowDisplayed.Add( _calendarDays.First( cd => cd.Date == curDow ) );
 
             curDow = curDow.AddDays( 7 );
         }

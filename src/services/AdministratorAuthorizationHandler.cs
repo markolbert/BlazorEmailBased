@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 // Copyright (c) 2026 Mark A. Olbert 
 // https://www.JumpForJoySoftware.com
 // AdministratorAuthorizationHandler.cs
@@ -17,6 +18,7 @@
 // 
 // You should have received a copy of the GNU General Public License along 
 // with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
+
 #endregion
 
 using Microsoft.AspNetCore.Authorization;
@@ -25,7 +27,8 @@ using Microsoft.Extensions.Options;
 
 namespace J4JSoftware.BlazorEmailBased.Services;
 
-public sealed class AdministratorAuthorizationHandler<TUser> : AuthorizationHandler<AdministratorRequirement>, IDisposable
+public sealed class AdministratorAuthorizationHandler<TUser> : AuthorizationHandler<AdministratorRequirement>,
+    IDisposable
     where TUser : IdentityUser<int>, IAdministrator
 {
     private readonly UserManager<TUser> _userManager;
@@ -36,16 +39,13 @@ public sealed class AdministratorAuthorizationHandler<TUser> : AuthorizationHand
     public AdministratorAuthorizationHandler(
         UserManager<TUser> userManager,
         IOptionsMonitor<SiteSettings> optionsMonitor
-        )
+    )
     {
         _userManager = userManager;
 
         _routeLoginsToAdminEmail = optionsMonitor.CurrentValue.RouteLoginsToAdminEmail;
 
-        _changeSubscription = optionsMonitor.OnChange( x =>
-        {
-            _routeLoginsToAdminEmail = x.RouteLoginsToAdminEmail;
-        });
+        _changeSubscription = optionsMonitor.OnChange( x => { _routeLoginsToAdminEmail = x.RouteLoginsToAdminEmail; } );
     }
 
     protected override async Task HandleRequirementAsync(

@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 // Copyright (c) 2026 Mark A. Olbert 
 // https://www.JumpForJoySoftware.com
 // SiteSettingsChangeListener.cs
@@ -17,6 +18,7 @@
 // 
 // You should have received a copy of the GNU General Public License along 
 // with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
+
 #endregion
 
 using J4JSoftware.BlazorEmailBased.Services;
@@ -30,36 +32,46 @@ namespace J4JSoftware.BlazorEmailBased;
 public sealed class SiteSettingsChangeListener<TUser, TDbContext>(
     IOptionsMonitor<SiteSettings> settings,
     IDbContextFactory<TDbContext> dbContextFactory
-    ) : IHostedService, IDisposable
+) : IHostedService, IDisposable
     where TUser : IdentityUser<int>, IAdministrator
     where TDbContext : DbContext
 {
     private IDisposable? _subscription;
 
-    public Task StartAsync(CancellationToken cancellationToken)
+    public Task StartAsync( CancellationToken cancellationToken )
     {
         var dbContext = dbContextFactory.CreateDbContext();
-        var userSet = dbContext.Set<TUser>();
+
+        DbSet<TUser>? userSet = null;
+
+        try
+        {
+            userSet = dbContext.Set<TUser>();
+        }
+        catch
+        {
+            //
+        }
 
         string[] adminEmails;
 
-        if (userSet == null)
+        if( userSet == null )
             adminEmails = [];
         else
         {
-            if (userSet.Any(u => u.IsAdministrator && u.Email != null))
-                adminEmails = userSet.Where(u => u.IsAdministrator).Select(u => u.Email!).ToArray();
-            else adminEmails = [];
+            adminEmails = userSet.Any( u => u.IsAdministrator && u.Email != null )
+                ? [.. userSet.Where( u => u.IsAdministrator ).Select( u => u.Email! )]
+                : [];
         }
 
-        settings.CurrentValue.OnSettingsChanged(adminEmails);
+        settings.CurrentValue.OnSettingsChanged( adminEmails );
 
-        _subscription = settings.OnChange(value => value.OnSettingsChanged(adminEmails));
+        _subscription = settings.OnChange( value => value.OnSettingsChanged( adminEmails ) );
 
         return Task.CompletedTask;
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    public Task StopAsync( CancellationToken cancellationToken )
     {
         _subscription?.Dispose();
         return Task.CompletedTask;
@@ -67,4 +79,3 @@ public sealed class SiteSettingsChangeListener<TUser, TDbContext>(
 
     public void Dispose() => _subscription?.Dispose();
 }
-

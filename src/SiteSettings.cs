@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 // Copyright (c) 2026 Mark A. Olbert 
 // https://www.JumpForJoySoftware.com
 // SiteSettings.cs
@@ -17,9 +18,8 @@
 // 
 // You should have received a copy of the GNU General Public License along 
 // with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
-#endregion
 
-using Microsoft.EntityFrameworkCore;
+#endregion
 
 namespace J4JSoftware.BlazorEmailBased;
 
@@ -31,8 +31,8 @@ public class SiteSettings
 
     private string[] _adminEmails = [];
 
-    public void OnSettingsChanged(string[] adminEmails) 
-    { 
+    public void OnSettingsChanged( string[] adminEmails )
+    {
         _adminEmails = adminEmails;
         UpdateAdminImpersonation();
     }
@@ -42,35 +42,35 @@ public class SiteSettings
 
     public int LoginLinkLifetimeMinutes
     {
-        get => field;
+        get;
         set => field = value < 1 ? DefaultLoginLinkLifetimeMinutes : value;
     }
 
     public bool RestrictNonAdmins { get; set; } = false;
-    
+
     public RouteEmailsToAdmin AdminImpersonation { get; private set; } = RouteEmailsToAdmin.Offline;
 
     private void UpdateAdminImpersonation()
     {
-        if (!RouteLoginsToAdminEmail)
+        if( !RouteLoginsToAdminEmail )
         {
             AdminImpersonation = RouteEmailsToAdmin.Offline;
             return;
         }
 
-        if(string.IsNullOrWhiteSpace(PreferredAdminEmail))
+        if( string.IsNullOrWhiteSpace( PreferredAdminEmail ) )
         {
             AdminImpersonation = RouteEmailsToAdmin.AdminEmailUndefined;
             return;
         }
 
-        if(!_adminEmails.Any())
+        if( !_adminEmails.Any() )
         {
             AdminImpersonation = RouteEmailsToAdmin.NoAdminEmailsDefined;
             return;
         }
 
-        if( !_adminEmails.Contains(PreferredAdminEmail) )
+        if( !_adminEmails.Contains( PreferredAdminEmail ) )
         {
             AdminImpersonation = RouteEmailsToAdmin.AdminEmailNotFound;
             return;
@@ -79,9 +79,9 @@ public class SiteSettings
         AdminImpersonation = RouteEmailsToAdmin.Online;
     }
 
-    public bool RouteLoginsToAdminEmail 
+    public bool RouteLoginsToAdminEmail
     {
-        get => field;
+        get;
 
         set
         {
@@ -90,8 +90,9 @@ public class SiteSettings
         }
     } = false;
 
-    public string PreferredAdminEmail {
-        get => field;
+    public string PreferredAdminEmail
+    {
+        get;
 
         set
         {

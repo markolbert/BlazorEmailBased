@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 // Copyright (c) 2026 Mark A. Olbert 
 // https://www.JumpForJoySoftware.com
 // ConditionalAdminHandler.cs
@@ -17,6 +18,7 @@
 // 
 // You should have received a copy of the GNU General Public License along 
 // with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
+
 #endregion
 
 using Microsoft.AspNetCore.Authorization;
@@ -31,14 +33,11 @@ public class ConditionalAdminHandler : AuthorizationHandler<ConditionalAdminRequ
 
     public ConditionalAdminHandler(
         IOptionsMonitor<SiteSettings> optionsMonitor
-        )
+    )
     {
         _restrictNonAdmins = optionsMonitor.CurrentValue.RestrictNonAdmins;
 
-        _changeSubscription = optionsMonitor.OnChange(x =>
-        {
-            _restrictNonAdmins = x.RestrictNonAdmins;
-        });
+        _changeSubscription = optionsMonitor.OnChange( x => { _restrictNonAdmins = x.RestrictNonAdmins; } );
     }
 
     protected override Task HandleRequirementAsync(

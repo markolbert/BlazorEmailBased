@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 // Copyright (c) 2026 Mark A. Olbert 
 // https://www.JumpForJoySoftware.com
 // RouteEmailsToAdmin.cs
@@ -17,6 +18,7 @@
 // 
 // You should have received a copy of the GNU General Public License along 
 // with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
+
 #endregion
 
 namespace J4JSoftware.BlazorEmailBased;
@@ -29,4 +31,3 @@ public enum RouteEmailsToAdmin
     AdminEmailUndefined,
     AdminEmailNotFound
 }
-

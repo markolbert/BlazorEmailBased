@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 // Copyright (c) 2026 Mark A. Olbert 
 // https://www.JumpForJoySoftware.com
 // IsoDateOnlyConverter.cs
@@ -17,13 +18,16 @@
 // 
 // You should have received a copy of the GNU General Public License along 
 // with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
+
 #endregion
 
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Globalization;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace J4JSoftware.BlazorEmailBased;
 
 public sealed class IsoDateOnlyConverter() : ValueConverter<DateOnly?, string?>(
     date => date == null ? null : date.Value.ToString( "yyyy-MM-dd", CultureInfo.InvariantCulture ),
-    text => string.IsNullOrEmpty(text) ? null : DateOnly.ParseExact( text, "yyyy-MM-dd", CultureInfo.InvariantCulture ) );
+    text => string.IsNullOrEmpty( text )
+        ? null
+        : DateOnly.ParseExact( text, "yyyy-MM-dd", CultureInfo.InvariantCulture ) );

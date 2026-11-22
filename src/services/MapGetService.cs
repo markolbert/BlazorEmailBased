@@ -1,4 +1,5 @@
 ﻿#region copyright
+
 // Copyright (c) 2026 Mark A. Olbert 
 // https://www.JumpForJoySoftware.com
 // MapGetService.cs
@@ -17,15 +18,18 @@
 // 
 // You should have received a copy of the GNU General Public License along 
 // with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
+
 #endregion
 
+using System.Security.Claims;
+using System.Text;
 using J4JSoftware.BlazorEmailBased.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using System.Security.Claims;
 
 namespace J4JSoftware.BlazorEmailBased;
 
@@ -49,18 +53,19 @@ public class MapGetService<TUser, TDbContext> : MapGetService, IDisposable
 
     public MapGetService(
         IOptionsMonitor<SiteSettings> optionsMonitor,
-        IDbContextFactory<TDbContext> dbContextFactory )
+        IDbContextFactory<TDbContext> dbContextFactory
+    )
     {
         _dbContext = dbContextFactory.CreateDbContext();
 
         _adminEmail = optionsMonitor.CurrentValue.PreferredAdminEmail;
         _routeLoginsToAdminEmail = optionsMonitor.CurrentValue.RouteLoginsToAdminEmail;
 
-        _changeSubscription = optionsMonitor.OnChange(x =>
+        _changeSubscription = optionsMonitor.OnChange( x =>
         {
             _adminEmail = x.PreferredAdminEmail;
             _routeLoginsToAdminEmail = x.RouteLoginsToAdminEmail;
-        });
+        } );
     }
 
     public async Task<IResult> VerifyMagicLinkAsync(
@@ -92,13 +97,13 @@ public class MapGetService<TUser, TDbContext> : MapGetService, IDisposable
         if( !_routeLoginsToAdminEmail || adminUser is not { IsAdministrator: true } )
         {
             // no need to create claims about admin impersonating a user
-            await signInManager.SignInAsync( originalUser, isPersistent: false );
+            await signInManager.SignInAsync( originalUser, false );
         }
         else
         {
             // user is valid admin impersonating a user, so store claims
             await signInManager.SignInWithClaimsAsync( originalUser,
-                                                       isPersistent: false,
+                                                       false,
                                                        [
                                                            new Claim( AdminImpersonatingUserClaimType,
                                                                       true.ToString() ),
@@ -140,8 +145,8 @@ public class MapGetService<TUser, TDbContext> : MapGetService, IDisposable
 
         try
         {
-            var adminEmail = config.GetValue<string>("SiteSettings:AdminEmail")!;
-            var siteName = config.GetValue<string>("SiteSettings:SiteName")!;
+            var adminEmail = config.GetValue<string>( "SiteSettings:AdminEmail" )!;
+            var siteName = config.GetValue<string>( "SiteSettings:SiteName" )!;
 
             var html = await templateService.GenerateLockedOutEmailAsync( user.Email! );
 
@@ -165,8 +170,8 @@ public class MapGetService<TUser, TDbContext> : MapGetService, IDisposable
         var user = await userManager.FindByEmailAsync( userId );
         if( user == null ) return null;
 
-        var decodedBytes = Microsoft.AspNetCore.WebUtilities.WebEncoders.Base64UrlDecode( token );
-        var cleanToken = System.Text.Encoding.UTF8.GetString( decodedBytes );
+        var decodedBytes = WebEncoders.Base64UrlDecode( token );
+        var cleanToken = Encoding.UTF8.GetString( decodedBytes );
 
         // Verify token against the PasswordlessTokenProvider configuration
         var isValid = userManager.VerifyUserTokenAsync( user,
