@@ -23,7 +23,7 @@
 <div style="width: 100%; max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
 
     <h2 style="width: fit-content; padding: 20px; background-color: #4CAF50; color: white; padding: 15px; text-align: left; font-size: 24px;">
-        @TagLine
+        @SiteName: @TagLine
     </h2>
 
     <div style="padding: 20px; color: #333333; line-height: 1.5;">
@@ -32,7 +32,7 @@
         <p style="margin-bottom: 20px;">
             Please click this link to log in:
             <a href="@VerificationLink" style="display: inline-block; color: #ffffff; text-decoration: none; border-top: 12px solid #008CBA; border-bottom: 12px solid #008CBA; border-left: 24px solid #008CBA; border-right: 24px solid #008CBA; background-color: #008CBA;">
-                @AccessSlug
+                Access @SiteName
             </a>
         </p>
     </div>
@@ -57,14 +57,14 @@
 
 @code {
 
+    [Parameter]
+    public required string SiteName { get; set; }
+
     [ Parameter ]
     public string Name { get; set; } = string.Empty;
 
     [ Parameter ]
-    public string TagLine { get; set; } = string.Empty;
-
-    [ Parameter ]
-    public string AccessSlug { get; set; } = string.Empty;
+    public required string TagLine { get; set; }
 
     [ Parameter ]
     public bool AdminImpersonating { get; set; }

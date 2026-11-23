@@ -25,6 +25,7 @@ using J4JSoftware.BlazorEmailBased.emails;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace J4JSoftware.BlazorEmailBased.Services;
 
@@ -32,8 +33,6 @@ public interface IHtmlEmailTemplateService
 {
     Task<string> GenerateLoginEmailAsync(
         string name,
-        string tagLine,
-        string accessSlug,
         bool adminImpersonating,
         LoginTokenInfo tokenInfo
     );
@@ -41,22 +40,39 @@ public interface IHtmlEmailTemplateService
     Task<string> GenerateLockedOutEmailAsync( string name );
 }
 
-public class HtmlEmailTemplateService( IServiceProvider serviceProvider, ILoggerFactory loggerFactory )
-    : IHtmlEmailTemplateService
+public class HtmlEmailTemplateService : IHtmlEmailTemplateService, IDisposable
 {
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ILoggerFactory _loggerFactory;
+    private readonly IDisposable? _changeSubscription;
+
+    public HtmlEmailTemplateService(
+        IOptionsMonitor<SiteSettings> optionsMonitor,
+        IServiceProvider serviceProvider,
+        ILoggerFactory loggerFactory
+    )
+    {
+        _serviceProvider = serviceProvider;
+        _loggerFactory = loggerFactory;
+
+        SiteSettings = optionsMonitor.CurrentValue;
+
+        _changeSubscription = optionsMonitor.OnChange( updated => { SiteSettings = updated; } );
+    }
+
+    protected SiteSettings? SiteSettings { get; private set; }
+
     public async Task<string> GenerateLoginEmailAsync(
         string name,
-        string tagLine,
-        string accessSlug,
         bool adminImpersonating,
         LoginTokenInfo tokenInfo
     )
     {
         var parameters = ParameterView.FromDictionary( new Dictionary<string, object?>
         {
+            { "SiteName", SiteSettings?.SiteName },
+            { "TagLine", SiteSettings?.TagLine },
             { "Name", name },
-            { "TagLine", tagLine },
-            { "AccessSlug", accessSlug },
             { "AdminImpersonating", adminImpersonating },
             { "VerificationLink", tokenInfo.VerifyUrl },
             { "LockOutLink", tokenInfo.LockoutUrl }
@@ -67,14 +83,16 @@ public class HtmlEmailTemplateService( IServiceProvider serviceProvider, ILogger
 
     public async Task<string> GenerateLockedOutEmailAsync( string name )
     {
-        var parameters = ParameterView.FromDictionary( new Dictionary<string, object?> { { "Name", name } } );
+        var parameters =
+            ParameterView.FromDictionary(
+                new Dictionary<string, object?> { { "SiteName", SiteSettings?.SiteName }, { "Name", name } } );
 
         return await GenerateEmailInternalAsync( typeof( LockedOutEmail ), parameters );
     }
 
     protected async Task<string> GenerateEmailInternalAsync( Type templateType, ParameterView parameters )
     {
-        await using var htmlRenderer = new HtmlRenderer( serviceProvider, loggerFactory );
+        await using var htmlRenderer = new HtmlRenderer( _serviceProvider, _loggerFactory );
 
         var html = await htmlRenderer.Dispatcher.InvokeAsync( async () =>
         {
@@ -83,5 +101,10 @@ public class HtmlEmailTemplateService( IServiceProvider serviceProvider, ILogger
         } );
 
         return html;
+    }
+
+    public void Dispose()
+    {
+        _changeSubscription?.Dispose();
     }
 }

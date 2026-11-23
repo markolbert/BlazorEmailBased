@@ -38,6 +38,7 @@ public class SiteSettings
     }
 
     public string SiteName { get; set; } = string.Empty;
+    public string TagLine { get; set; } = string.Empty;
     public int ItemsPerPage { get; set; } = DefaultItemsPerPage;
 
     public int LoginLinkLifetimeMinutes
@@ -45,6 +46,8 @@ public class SiteSettings
         get;
         set => field = value < 1 ? DefaultLoginLinkLifetimeMinutes : value;
     }
+
+    public bool ForceLoginEmail { get; set; } = false;
 
     public bool RestrictNonAdmins { get; set; } = false;
 
