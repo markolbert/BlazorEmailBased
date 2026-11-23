@@ -1,6 +1,6 @@
 ﻿namespace J4JSoftware.BlazorEmailBased;
 
-public class OklchColor
+public partial class OklchColor
 {
     public const double MinLightness = 0;
     public const double MaxLightness = 1;
