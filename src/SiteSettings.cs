@@ -21,6 +21,8 @@
 
 #endregion
 
+using System.Text.RegularExpressions;
+
 namespace J4JSoftware.BlazorEmailBased;
 
 public class SiteSettings
@@ -31,15 +33,38 @@ public class SiteSettings
 
     private string[] _adminEmails = [];
 
-    public void OnSettingsChanged( string[] adminEmails )
+    public void OnAdminEmailsChanged( string[] adminEmails )
     {
         _adminEmails = adminEmails;
         UpdateAdminImpersonation();
     }
 
+    public void OnBackgroundColorChanged( string globalsPath )
+    {
+        try
+        {
+            var css = File.ReadAllText(globalsPath);
+
+            var match = Regex.Match(css, @$"{IdColorSettings.BackgroundColorCssClass}:\s*([^;]+);");
+            BackgroundColor = match.Groups[1].Value.Trim();
+        }
+        catch
+        {
+            BackgroundColor = "#FFFFFF";
+        }
+
+        var lchBackground = OkLchColorExtensions.TextToOklchColor(BackgroundColor);
+
+        FirstIdComplement = lchBackground.ToSafeComplement();
+    }
+
     public string SiteName { get; set; } = string.Empty;
     public string TagLine { get; set; } = string.Empty;
     public int ItemsPerPage { get; set; } = DefaultItemsPerPage;
+
+    public IdColorSettings IdColorSettings { get; set; } = null!;
+    public string BackgroundColor { get; private set; } = "#FFFFFF";
+    public OklchColor? FirstIdComplement { get; private set; }
 
     public int LoginLinkLifetimeMinutes
     {
