@@ -21,26 +21,6 @@
 
 @using System.Globalization
 @using System.Text
-@*
- Copyright (c) 2026 Mark A. Olbert
- https://www.JumpForJoySoftware.com
- MyCalendar.razor
-
- This file is part of JumpForJoy Software's BlazorEmailBased package.
- 
- BlazorEmailBased is free software: you can redistribute it and/or modify it 
- under the terms of the GNU General Public License as published by the 
- Free Software Foundation, either version 3 of the License, or 
- (at your option) any later version.
- 
- BlazorEmailBased is distributed in the hope that it will be useful, but 
- WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
- for more details.
- 
- You should have received a copy of the GNU General Public License along 
- with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
-*@
 
 <div class="calendar-card">
     <div class="calendar-header">
@@ -122,7 +102,8 @@
 
     private readonly List<CalendarDay> _calendarDays = [];
 
-    private DateTime _firstOfMonth = DateTime.Today.AddDays( -DateTime.Today.Day + 1 );
+    private DateTime _firstOfMonth = DateTime.Today.AddDays(-DateTime.Today.Day + 1);
+
     private string CurrentMonthName => _firstOfMonth.ToString( "MMMM", CultureInfo.CurrentCulture );
     private int CurrentYear => _firstOfMonth.Year;
 
