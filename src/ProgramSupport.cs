@@ -71,6 +71,11 @@ public static class ProgramSupport
         builder.Services.Configure<SiteSettings>( siteSettingsSection );
         builder.Services.AddHostedService<SiteSettingsChangeListener<TUser, TDbContext>>();
 
+        // need to do this as a two-step to get a single, shared instance
+        // as both an IHostedService and injection
+        builder.Services.AddSingleton<OklchServices>();
+        builder.Services.AddSingleton<IHostedService>( p => p.GetRequiredService<OklchServices>() );
+
         var siteSettings = siteSettingsSection.Get<SiteSettings>()
          ?? throw new InvalidOperationException( $"Missing configuration for {SiteSettings.SectionName}" );
 
