@@ -21,7 +21,13 @@
 
 @typeparam TItem
 
-@if( Items.Count > ItemsPerPage )
+@implements IDisposable
+
+@using Microsoft.Extensions.Options
+
+@inject IOptionsMonitor<SiteSettings> SiteSettingsMonitor
+
+@if (Items.Count > ItemsPerPage)
 {
     <div class="pagination">
         <div>
@@ -59,7 +65,16 @@
     public List<TItem> Items { get; set; } = [];
 
     [ Parameter ]
-    public int ItemsPerPage { get; set; }
+    public int ItemsPerPage
+    {
+        get;
+
+        set
+        {
+            field = value;
+            _customItemsPerPage = true;
+        }
+    } = 5;
 
     [ Parameter ]
     public int PageNum { get; set; }
@@ -67,7 +82,26 @@
     [ Parameter ]
     public EventCallback<int> PageNumChanged { get; set; }
 
-    private async Task ChangePageAsync( int delta )
+    private IDisposable? _changeSubscription;
+    private bool _customItemsPerPage;
+
+    protected override void OnInitialized()
+    {
+        ItemsPerPage = SiteSettingsMonitor.CurrentValue.ItemsPerPage;
+
+        _changeSubscription = SiteSettingsMonitor.OnChange( updated =>
+        {
+            if( _customItemsPerPage )
+                return;
+
+            ItemsPerPage = updated.ItemsPerPage;
+
+            // The notification may arrive outside this component's renderer context.
+            _ = InvokeAsync( StateHasChanged );
+        } );
+    }
+
+    private async Task ChangePageAsync(int delta)
     {
         PageNum += delta;
 
@@ -76,4 +110,8 @@
         StateHasChanged();
     }
 
+    public void Dispose()
+    {
+        _changeSubscription?.Dispose();
+    }
 }
