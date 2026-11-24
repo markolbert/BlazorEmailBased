@@ -64,9 +64,9 @@ public sealed class SiteSettingsChangeListener<TUser, TDbContext>(
                 : [];
         }
 
-        settings.CurrentValue.OnSettingsChanged( adminEmails );
+        settings.CurrentValue.OnAdminEmailsChanged( adminEmails );
 
-        _subscription = settings.OnChange( value => value.OnSettingsChanged( adminEmails ) );
+        _subscription = settings.OnChange( value => value.OnAdminEmailsChanged( adminEmails ) );
 
         return Task.CompletedTask;
     }
