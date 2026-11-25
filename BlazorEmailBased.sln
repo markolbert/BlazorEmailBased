@@ -16,7 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{70F11524-4
 	ProjectSection(SolutionItems) = preProject
 		docs\background.md = docs\background.md
 		docs\dedication.md = docs\dedication.md
-		docs\index.md = docs\index.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lessons-learned", "lessons-learned", "{E3931A2B-941F-4703-AE08-EFAB89E719E8}"
@@ -32,7 +31,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "api", "api", "{7780651D-EFC
 		docs\api\calendar.md = docs\api\calendar.md
 		docs\api\day-state.md = docs\api\day-state.md
 		docs\api\dow-clicked-args.md = docs\api\dow-clicked-args.md
-		docs\api\index.md = docs\api\index.md
 	EndProjectSection
 EndProject
 Global
