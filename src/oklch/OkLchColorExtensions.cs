@@ -25,7 +25,7 @@ namespace J4JSoftware.BlazorEmailBased;
 
 public static class OkLchColorExtensions
 {
-    public static OklchColor TextToOklchColor(string rgbColor)
+    public static OklchColor TextToOklchColor( string rgbColor )
     {
         int redRaw;
         int greenRaw;
@@ -33,26 +33,26 @@ public static class OkLchColorExtensions
 
         try
         {
-            redRaw = Convert.ToInt32(rgbColor.Substring(1, 2), 16);
-            greenRaw = Convert.ToInt32(rgbColor.Substring(3, 2), 16);
-            blueRaw = Convert.ToInt32(rgbColor.Substring(5, 2), 16);
+            redRaw = Convert.ToInt32( rgbColor.Substring( 1, 2 ), 16 );
+            greenRaw = Convert.ToInt32( rgbColor.Substring( 3, 2 ), 16 );
+            blueRaw = Convert.ToInt32( rgbColor.Substring( 5, 2 ), 16 );
         }
-        catch (Exception ex)
+        catch( Exception ex )
         {
-            throw new RgbToOklchColorException(rgbColor, ex.Message);
+            throw new RgbToOklchColorException( rgbColor, ex.Message );
         }
 
-        var red = Inv(redRaw);
-        var green = Inv(greenRaw);
-        var blue = Inv(blueRaw);
+        var red = Inv( redRaw );
+        var green = Inv( greenRaw );
+        var blue = Inv( blueRaw );
 
         var l = 0.4122214708 * red + 0.5363325363 * green + 0.0514459929 * blue;
         var m = 0.2119034982 * red + 0.6806995451 * green + 0.1073969566 * blue;
         var s = 0.0883024619 * red + 0.2817188376 * green + 0.6299787005 * blue;
 
-        var lMod = Math.Cbrt(l);
-        var mMod = Math.Cbrt(m);
-        var sMod = Math.Cbrt(s);
+        var lMod = Math.Cbrt( l );
+        var mMod = Math.Cbrt( m );
+        var sMod = Math.Cbrt( s );
 
         // 3. LMS to OkLab
         var lightness = 0.2104542553 * lMod + 0.7936177850 * mMod - 0.0040720468 * sMod;
@@ -60,15 +60,15 @@ public static class OkLchColorExtensions
         var bb = 0.0259040371 * lMod + 0.7827717662 * mMod - 0.8086757660 * sMod;
 
         // 4. OkLab to Oklch
-        var hue = Math.Atan2(bb, a) * 180 / Math.PI;
-        if (hue < 0) hue += 360;
+        var hue = Math.Atan2( bb, a ) * 180 / Math.PI;
+        if( hue < 0 ) hue += 360;
 
-        return new OklchColor { Chroma = Math.Sqrt(a * a + bb * bb), Hue = hue, Lightness = lightness };
+        return new OklchColor { Chroma = Math.Sqrt( a * a + bb * bb ), Hue = hue, Lightness = lightness };
 
-        static double Inv(double c)
+        static double Inv( double c )
         {
             c /= 255.0;
-            return c <= 0.04045 ? c / 12.92 : Math.Pow((c + 0.055) / 1.055, 2.4);
+            return c <= 0.04045 ? c / 12.92 : Math.Pow( ( c + 0.055 ) / 1.055, 2.4 );
         }
     }
 
@@ -93,22 +93,25 @@ public static class OkLchColorExtensions
             if( numColors < 1 )
                 numColors = 1;
 
-            var retVal = new List<OklchColor>();
-
             var cappedChroma = color.Chroma < 0.15 ? 0.15 : color.Chroma;
             if( chromaOverride.HasValue )
                 cappedChroma = chromaOverride.Value;
 
-            var step = 360 / numColors;
-            var curHue = color.Hue;
+            var retVal = new List<OklchColor>();
+            var step = 360.0 / numColors;
+            var baseHue = color.Hue;
 
             for( var idx = 0; idx < numColors; idx++ )
             {
-                retVal.Add( new OklchColor { Chroma = cappedChroma, Hue = curHue, Lightness = color.Lightness } );
+                var candidateHue = ( baseHue + idx * step ) % 360;
+                var candidate = new OklchColor
+                {
+                    Lightness = color.Lightness, Chroma = cappedChroma, Hue = candidateHue
+                };
 
-                curHue += step;
-                if( curHue >= 360 )
-                    curHue -= 360;
+                // Nudge until distinct from all accepted colors
+                candidate = MakeDistinct( candidate, retVal );
+                retVal.Add( candidate );
             }
 
             return retVal;
@@ -150,5 +153,86 @@ public static class OkLchColorExtensions
                 return (int) Math.Round( Math.Clamp( sRgb, 0, 1 ) * 255 );
             }
         }
+    }
+
+    private static OklchColor MakeDistinct( OklchColor candidate, List<OklchColor> accepted )
+    {
+        // Try small hue nudges, keep first one > min distance
+        const double minDist = 0.12; // OKLab distance, tune 0.08 - 0.15
+        for( var offset = 0.0; offset < 30.0; offset += 5.0 )
+        {
+            foreach( var sign in new[] { 1.0, -1.0 } )
+            {
+                var test = new OklchColor
+                {
+                    Lightness = candidate.Lightness,
+                    Chroma = candidate.Chroma,
+                    Hue = ( candidate.Hue + offset * sign + 360 ) % 360
+                };
+                if( accepted.All( a => OkLabDistance( a, test ) > minDist ) )
+                    return GamutMap( test );
+            }
+        }
+
+        return GamutMap( candidate );
+    }
+
+    private static double OkLabDistance( OklchColor a, OklchColor b )
+    {
+        // Oklch -> Oklab
+        var (a1, b1) = ToAb( a );
+        var (a2, b2) = ToAb( b );
+        var dL = a.Lightness - b.Lightness;
+        var da = a1 - a2;
+        var db = b1 - b2;
+        return Math.Sqrt( dL * dL + da * da + db * db );
+    }
+
+    private static (double a, double b) ToAb( OklchColor c )
+    {
+        var hRad = c.Hue * Math.PI / 180.0;
+        return ( c.Chroma * Math.Cos( hRad ), c.Chroma * Math.Sin( hRad ) );
+    }
+
+    private static OklchColor GamutMap( OklchColor c )
+    {
+        // Reduce chroma until in sRGB gamut
+        while( c.Chroma > 0.02 && !IsInSRGB( c ) )
+            c.Chroma -= 0.01;
+        return c;
+    }
+
+    // ReSharper disable once InconsistentNaming
+    private static bool IsInSRGB( OklchColor c )
+    {
+        // Oklch -> OkLab
+        var hRad = c.Hue * Math.PI / 180.0;
+        var a = c.Chroma * Math.Cos( hRad );
+        var b = c.Chroma * Math.Sin( hRad );
+
+        // OkLab -> linear sRGB
+        var l_ = c.Lightness + 0.3963377774 * a + 0.2158037573 * b;
+        var m_ = c.Lightness - 0.1055613458 * a - 0.0638541728 * b;
+        var s_ = c.Lightness - 0.0894841775 * a - 1.2914855480 * b;
+
+        var l = l_ * l_ * l_;
+        var m = m_ * m_ * m_;
+        var s = s_ * s_ * s_;
+
+        var rLin = 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s;
+        var gLin = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
+        var bLin = -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s;
+
+        // linear -> sRGB, then in-gamut check
+        var r = LinToSrgb( rLin );
+        var g = LinToSrgb( gLin );
+        var bl = LinToSrgb( bLin );
+
+        return r is >= 0 and <= 1 && g is >= 0 and <= 1 && bl is >= 0 and <= 1;
+    }
+
+    private static double LinToSrgb( double c )
+    {
+        return c <= 0.0031308 ? 12.92 * c : 1.055 * Math.Pow( c, 1.0 / 2.4 ) - 0.055;
     }
 }
