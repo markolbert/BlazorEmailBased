@@ -27,8 +27,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "api", "api", "{7780651D-EFC8-4D8B-80C8-6BC34A20A204}"
 	ProjectSection(SolutionItems) = preProject
 		docs\api\calendar-args.md = docs\api\calendar-args.md
+		docs\api\calendar-css.md = docs\api\calendar-css.md
 		docs\api\calendar-day.md = docs\api\calendar-day.md
 		docs\api\calendar.md = docs\api\calendar.md
+		docs\api\day-state.md = docs\api\day-state.md
+		docs\api\dow-clicked-args.md = docs\api\dow-clicked-args.md
 		docs\api\index.md = docs\api\index.md
 	EndProjectSection
 EndProject

@@ -5,28 +5,31 @@ selected day, as well as properties that can be set to define how
 it displays:
 
 ```csharp
-// internal details omitted (see source code for complete definition)
 public class CalendarDay
 {
+    internal CalendarDay(
+        DateOnly date
+    )
+    {
+        Date = date;
+        FirstOfMonth = date.AddDays( -date.Day + 1 );
+        InCurrentMonth = date.Month == FirstOfMonth.Month && date.Year == FirstOfMonth.Year;
+        InThePast = date < DateOnly.FromDateTime( DateTime.Today );
+    }
+
     public DateOnly Date { get; }
+    public DateOnly FirstOfMonth { get; }
 
-    // indicates whether the day is part of the current
-    // month being displayed by the component
-    public bool InCurrentMonth { get;}
-
-    // indicates whether the day is before today's date
+    public bool InCurrentMonth { get; }
     public bool InThePast { get; }
 
-    // indicates whether the day is clickable, inactive, both
-    // or neither
-    public DayState State { get; set; }
-
-    // the background color (hex code) of the selected day 
-    // in the component
+    public DayState State { get; set; } = DayState.None;
     public string? BackgroundColor { get; set; }
-
-    // a list of colors (hex codes) to be displayed in day's
-    // display cell
     public List<string>? BlockColors { get; set; }
 }
 ```
+
+`State` is a flag enum which controls whether or not the day cell can
+be clicked, and whether it is inactive for some reason (e.g., because
+it's not a day within the currently displayed month). See
+[DayState](day-state.md) for details.
