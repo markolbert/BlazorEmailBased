@@ -153,6 +153,21 @@ div.table-cell-clickable:hover {
     color: var(--row-text-odd-link);
 }
 
+div.squares {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+div.square {
+    flex: 0 0 auto;
+    width: 10px;
+    height: 10px;
+}
+
 div.grid-adjacent {
     display: flex;
     gap: 10px;
