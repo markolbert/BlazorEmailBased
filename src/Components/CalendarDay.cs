@@ -41,5 +41,4 @@ public class CalendarDay
 
     public DayState State { get; set; } = DayState.None;
     public string? BackgroundColor { get; set; }
-    public List<string>? BlockColors { get; set; }
 }
