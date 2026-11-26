@@ -24,12 +24,20 @@
 
 <div class="calendar-card">
     <div class="calendar-header">
-        <button class="btn-secondary" @onclick="PreviousMonthAsync">&lt;</button>
+        @if( CanChangeMonth )
+        {
+            <button class="btn-secondary" @onclick="PreviousMonthAsync">&lt;</button>
+        }
+
         <h2>@CurrentMonthName @CurrentYear</h2>
-        <button class="btn-secondary" @onclick="NextMonthAsync">&gt;</button>
+        
+        @if( CanChangeMonth )
+        {
+            <button class="btn-secondary" @onclick="NextMonthAsync">&gt;</button>
+        }
     </div>
 
-    @if( DaysOfWeekClickable )
+    @if( !DisplayOnly && DaysOfWeekClickable )
     {
         <div class="calendar-grid weekdays">
             <div @onclick="@( () => ToggleDowExclusionAsync( DayOfWeek.Sunday ) )" style="cursor: pointer;">Sun</div>
@@ -57,16 +65,16 @@
     <div class="calendar-grid days">
         @foreach( var day in _calendarDays )
         {
-            if( IsDayCellClickable( day ) )
+            if( !DisplayOnly && IsDayCellClickable( day ) )
             {
                 <div class="@GetDayCellClass( day )"
                      style="@( string.IsNullOrEmpty( day.BackgroundColor ) ? string.Empty : $"background-color: #{day.BackgroundColor};" )"
                      @onclick="() => ToggleDateExclusionAsync( day )">
                     @( day.Date.Day )
-
-                    @foreach( var colorCode in day.BlockColors ?? Enumerable.Empty<string>() )
+                    
+                    @if( CellTemplate?.Invoke( day.Date ) != null )
                     {
-                        <div style="background-color: @colorCode;">&nbsp;</div>
+                        @CellTemplate(day.Date)
                     }
                 </div>
             }
@@ -76,9 +84,9 @@
                      style="@( string.IsNullOrEmpty( day.BackgroundColor ) ? string.Empty : $"background-color: #{day.BackgroundColor};" )">
                     @( day.Date.Day )
 
-                    @foreach( var colorCode in day.BlockColors ?? Enumerable.Empty<string>() )
+                    @if (CellTemplate?.Invoke(day.Date) != null)
                     {
-                        <div style="background-color: #@colorCode;">&nbsp;</div>
+                        @CellTemplate(day.Date)
                     }
                 </div>
             }
@@ -88,10 +96,16 @@
 
 @code {
 
-    [ Parameter ]
-    public bool DaysOfWeekClickable { get; set; }
+    [Parameter]
+    public bool DisplayOnly { get; set; }
 
     [ Parameter ]
+    public bool CanChangeMonth { get; set; } = true;
+
+    [Parameter]
+    public bool DaysOfWeekClickable { get; set; }
+
+    [Parameter]
     public EventCallback<CalendarArgs> UpdateCalendarInfo { get; set; }
 
     [ Parameter ]
@@ -99,6 +113,9 @@
 
     [ Parameter ]
     public EventCallback<CalendarDay> DayClicked { get; set; }
+
+    [Parameter]
+    public RenderFragment<DateOnly>? CellTemplate { get; set; }
 
     private readonly List<CalendarDay> _calendarDays = [];
 
