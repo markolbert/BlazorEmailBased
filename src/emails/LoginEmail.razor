@@ -19,25 +19,48 @@
  with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
 *@
 
+@using J4JSoftware.BlazorEmailBased.Emails
+
+@*
+ Copyright (c) 2026 Mark A. Olbert
+ https://www.JumpForJoySoftware.com
+ LoginEmail.razor
+
+ This file is part of JumpForJoy Software's BlazorEmailBased package.
+ 
+ BlazorEmailBased is free software: you can redistribute it and/or modify it 
+ under the terms of the GNU General Public License as published by the 
+ Free Software Foundation, either version 3 of the License, or 
+ (at your option) any later version.
+ 
+ BlazorEmailBased is distributed in the hope that it will be useful, but 
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+ or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+ for more details.
+ 
+ You should have received a copy of the GNU General Public License along 
+ with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
+*@
+
 @* LoginEmail.razor *@
 <div style="width: 100%; max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
 
     <h2 style="width: fit-content; padding: 20px; background-color: #4CAF50; color: white; padding: 15px; text-align: left; font-size: 24px;">
-        @SiteName: @TagLine
+        @EmailProperties.SiteName: @EmailProperties.TagLine
     </h2>
 
     <div style="padding: 20px; color: #333333; line-height: 1.5;">
-        <p style="margin-bottom: 20px;">Hello <strong>@Name</strong>,</p>
+        <p style="margin-bottom: 20px;">Hello <strong>@EmailProperties.Name</strong>,</p>
 
         <p style="margin-bottom: 20px;">
             Please click this link to log in:
-            <a href="@VerificationLink" style="display: inline-block; color: #ffffff; text-decoration: none; border-top: 12px solid #008CBA; border-bottom: 12px solid #008CBA; border-left: 24px solid #008CBA; border-right: 24px solid #008CBA; background-color: #008CBA;">
-                Access @SiteName
+            <a href="@EmailProperties.VerificationLink" style="display: inline-block; color: #ffffff; text-decoration: none; border-top: 12px solid #008CBA; border-bottom: 12px solid #008CBA; border-left: 24px solid #008CBA; border-right: 24px solid #008CBA; background-color: #008CBA;">
+                Access @EmailProperties.SiteName
             </a>
         </p>
     </div>
 
-    @if( AdminImpersonating )
+    @if (EmailProperties.AdminImpersonating)
     {
         <p style="margin-bottom: 20px; color: firebrick; font-style: italic;">
             The designated Administrator account is impersonating this user.
@@ -47,7 +70,7 @@
     <div style="padding: 20px; color: #333333; line-height: 1.5;">
         <p style="margin-bottom: 20px;">
             If you did <span style="font-weight:bold; font-size: 18px;">not</span> request this login, please click this link to report it:
-            <a href="@LockOutLink" style="display: inline-block; color: #ffffff; text-decoration: none; border-top: 12px solid #9C2113; border-bottom: 12px solid #9C2113; border-left: 24px solid #9C2113; border-right: 24px solid #9C2113; background-color: #9C2113;">
+            <a href="@EmailProperties.LockOutLink" style="display: inline-block; color: #ffffff; text-decoration: none; border-top: 12px solid #9C2113; border-bottom: 12px solid #9C2113; border-left: 24px solid #9C2113; border-right: 24px solid #9C2113; background-color: #9C2113;">
                 Report Malicious Login Attempt
             </a>
         </p>
@@ -56,23 +79,6 @@
 </div>
 
 @code {
-
     [Parameter]
-    public required string SiteName { get; set; }
-
-    [ Parameter ]
-    public string Name { get; set; } = string.Empty;
-
-    [ Parameter ]
-    public required string TagLine { get; set; }
-
-    [ Parameter ]
-    public bool AdminImpersonating { get; set; }
-
-    [ Parameter ]
-    public string VerificationLink { get; set; } = string.Empty;
-
-    [ Parameter ]
-    public string LockOutLink { get; set; } = string.Empty;
-
+    public required ILoginEmailSettings EmailProperties { get; set; }
 }

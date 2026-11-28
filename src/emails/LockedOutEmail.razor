@@ -19,26 +19,43 @@
  with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
 *@
 
+@using J4JSoftware.BlazorEmailBased.Emails
+@*
+ Copyright (c) 2026 Mark A. Olbert
+ https://www.JumpForJoySoftware.com
+ LockedOutEmail.razor
+
+ This file is part of JumpForJoy Software's BlazorEmailBased package.
+ 
+ BlazorEmailBased is free software: you can redistribute it and/or modify it 
+ under the terms of the GNU General Public License as published by the 
+ Free Software Foundation, either version 3 of the License, or 
+ (at your option) any later version.
+ 
+ BlazorEmailBased is distributed in the hope that it will be useful, but 
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+ or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+ for more details.
+ 
+ You should have received a copy of the GNU General Public License along 
+ with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
+*@
+
 @* LockedOutEmail.razor *@
 
 <div style="width: 100%; max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
 
     <h2 style="width: fit-content; padding: 20px; background-color: #4CAF50; color: white; padding: 15px; text-align: left; font-size: 24px;">
-        @SiteName
+        @EmailProperties.SiteName
     </h2>
 
     <p style="margin-bottom: 20px;">
-        <strong>@Name</strong> has been locked out at their request.
+        <strong>@EmailProperties.Name</strong> has been locked out at their request.
     </p>
 
 </div>
 
 @code {
-
     [Parameter]
-    public required string SiteName { get; set; }
-
-    [ Parameter ]
-    public string Name { get; set; } = string.Empty;
-
+    public required ILockOutEmailSettings EmailProperties { get; set; }
 }
