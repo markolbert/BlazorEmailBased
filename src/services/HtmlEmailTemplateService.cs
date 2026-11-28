@@ -19,7 +19,6 @@
 // with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
 #endregion
 
-using J4JSoftware.BlazorEmailBased.emails;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
@@ -29,13 +28,9 @@ namespace J4JSoftware.BlazorEmailBased.Services;
 
 public interface IHtmlEmailTemplateService
 {
-    Task<string> GenerateLoginEmailAsync(
-        string name,
-        bool adminImpersonating,
-        LoginTokenInfo tokenInfo
-    );
-
-    Task<string> GenerateLockedOutEmailAsync( string name );
+    Task<string> GenerateEmailFromTemplate<TTemplate, TSettings>( TSettings settings )
+        where TTemplate : class
+        where TSettings : class;
 }
 
 public class HtmlEmailTemplateService : IHtmlEmailTemplateService, IDisposable
@@ -60,41 +55,18 @@ public class HtmlEmailTemplateService : IHtmlEmailTemplateService, IDisposable
 
     protected SiteSettings? SiteSettings { get; private set; }
 
-    public async Task<string> GenerateLoginEmailAsync(
-        string name,
-        bool adminImpersonating,
-        LoginTokenInfo tokenInfo
-    )
+    public async Task<string> GenerateEmailFromTemplate<TTemplate, TSettings>( TSettings settings )
+        where TTemplate : class
+        where TSettings : class
     {
-        var parameters = ParameterView.FromDictionary( new Dictionary<string, object?>
-        {
-            { "SiteName", SiteSettings?.SiteName },
-            { "TagLine", SiteSettings?.TagLine },
-            { "Name", name },
-            { "AdminImpersonating", adminImpersonating },
-            { "VerificationLink", tokenInfo.VerifyUrl },
-            { "LockOutLink", tokenInfo.LockoutUrl }
-        } );
+        var dict = new Dictionary<string, object?>() { { "EmailProperties", settings } };
+        var parameters = ParameterView.FromDictionary( dict );
 
-        return await GenerateEmailInternalAsync( typeof( LoginEmail ), parameters );
-    }
-
-    public async Task<string> GenerateLockedOutEmailAsync( string name )
-    {
-        var parameters =
-            ParameterView.FromDictionary(
-                new Dictionary<string, object?> { { "SiteName", SiteSettings?.SiteName }, { "Name", name } } );
-
-        return await GenerateEmailInternalAsync( typeof( LockedOutEmail ), parameters );
-    }
-
-    protected async Task<string> GenerateEmailInternalAsync( Type templateType, ParameterView parameters )
-    {
         await using var htmlRenderer = new HtmlRenderer( _serviceProvider, _loggerFactory );
 
         var html = await htmlRenderer.Dispatcher.InvokeAsync( async () =>
         {
-            var output = await htmlRenderer.RenderComponentAsync( templateType, parameters );
+            var output = await htmlRenderer.RenderComponentAsync( typeof( TTemplate ), parameters );
             return output.ToHtmlString();
         } );
 
