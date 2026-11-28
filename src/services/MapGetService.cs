@@ -19,8 +19,8 @@
 // with BlazorEmailBased. If not, see <https://www.gnu.org/licenses/>.
 #endregion
 
-using System.Security.Claims;
-using System.Text;
+using J4JSoftware.BlazorEmailBased.emails;
+using J4JSoftware.BlazorEmailBased.Emails;
 using J4JSoftware.BlazorEmailBased.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -28,6 +28,9 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.Graph.Models;
+using System.Security.Claims;
+using System.Text;
 
 namespace J4JSoftware.BlazorEmailBased;
 
@@ -146,7 +149,9 @@ public class MapGetService<TUser, TDbContext> : MapGetService, IDisposable
             var adminEmail = config.GetValue<string>( "SiteSettings:AdminEmail" )!;
             var siteName = config.GetValue<string>( "SiteSettings:SiteName" )!;
 
-            var html = await templateService.GenerateLockedOutEmailAsync( user.Email! );
+            var emailProps = new LockOutEmailSettings( siteName, user.UserName! );
+
+            var html = await templateService.GenerateEmailFromTemplate<LockedOutEmail, ILockOutEmailSettings>(emailProps);
 
             await emailService.SendEmailAsync( adminEmail,
                                                $"{siteName} Locked Out",
@@ -163,7 +168,7 @@ public class MapGetService<TUser, TDbContext> : MapGetService, IDisposable
         return Results.Redirect( "/Static/locked-out.html" );
     }
 
-    private async Task<TUser?> GetUserAsync( string userId, string token, UserManager<TUser> userManager )
+    private static async Task<TUser?> GetUserAsync( string userId, string token, UserManager<TUser> userManager )
     {
         var user = await userManager.FindByEmailAsync( userId );
         if( user == null ) return null;
